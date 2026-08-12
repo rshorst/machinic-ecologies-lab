@@ -875,6 +875,21 @@
         .axis-ticks .tick-x { bottom: 6px; transform: translateX(-50%); }
         .axis-ticks .tick-y { left: 8px; transform: translateY(-50%); }
 
+        /* --- capture bar --- */
+        .capture-bar {
+            display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;
+            max-width: 1400px; margin: 18px auto 0; padding: 12px 18px;
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 16px;
+        }
+        .capture-progress { font-size: 0.85rem; color: #a9c4d6; }
+        .capture-bar.ready .capture-progress { color: #8be3b0; }
+        .capture-name {
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.22);
+            border-radius: 14px; padding: 8px 14px; color: #e2e8f0; font-family: inherit; font-size: 0.85rem; width: 160px;
+        }
+        .capture-name.needs { border-color: rgba(255,120,120,0.8); }
+        .capture-msg { font-size: 0.8rem; color: #8be3b0; }
+
         /* --- guided explore --- */
         .explore-bar { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 18px; }
         .explore-label { font-size: 0.72rem; letter-spacing: 0.6px; text-transform: uppercase; color: #8fb3c9; }
@@ -1024,7 +1039,15 @@
                 <div class="axis-label y-axis-top" id="topLabel" style="display: none;"></div>
             </div>
         </div>
-        
+
+        <div class="capture-bar" id="captureBar">
+            <span class="capture-progress" id="captureProgress">Placed 0 of 5 on the current tensions</span>
+            <input class="capture-name" id="captureName" type="text" placeholder="Your name" />
+            <button class="axis-mini" id="captureSave">Save my placements</button>
+            <button class="axis-mini" id="captureCopy">Copy rows</button>
+            <span class="capture-msg" id="captureMsg"></span>
+        </div>
+
         <div class="info-panel">
             <h3 id="selectedName">Select a metaphor to explore</h3>
             <div id="defaultInfo">
@@ -1414,7 +1437,7 @@
         // Published Google Sheet CSV (in Sheets: File → Share → Publish to web → CSV).
         // Paste that link between the quotes below, or pass it at the page URL as ?csv=<link>.
         // Leave it "" to fall back to the DEMO_CONTRIBUTIONS sample below.
-        const PUBLISHED_CSV = "";
+        const PUBLISHED_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRk0HlVCSyslaOg_zZ_8zvFhn7BF7QmSPYFoyg_nHgNaC_ZxutiCMGhw_ZAVXghMDK6Tz8FniqAE9Gu/pub?output=csv";
 
         // Demo rows: shown ONLY when no live sheet is connected, so the page has example
         // contributions out of the box. Once you set PUBLISHED_CSV (or pass ?csv=), this is
@@ -1723,6 +1746,7 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
             setupTensionSelects();
             setupMetaphorMenu();
             setupExplore();
+            setupCapture();
             updateVisualization();
             document.addEventListener('mousemove', handleDragMove);
             document.addEventListener('mouseup', handleDragEnd);
@@ -1896,6 +1920,7 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
                 if (!wasActualDrag) {
                     selectPosition(dragPosition, dragElement);
                 } else {
+                    updateCaptureProgress();
                     if (selectedData) drawOpposition(selectedData);
                     setTimeout(() => {
                         renderConnectionLines();
@@ -2095,6 +2120,85 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
                 });
             });
         }
+        // ---- capture: student places metaphors, save routes rows back to the sheet ----
+        const PLACE_TARGET = 5;
+        // OPTIONAL: paste a Google Apps Script web-app URL here to POST placements straight into
+        // your Sheet. Leave "" to save by download / copy-paste instead.
+        const SAVE_ENDPOINT = "https://script.google.com/macros/s/AKfycbx4KuxlYmwUDnBiaWrIdIqrnxav4UWraEo63YHy7Obps9c4OFuRAwc8jwoHt_fusSBm/exec";
+        // OPTIONAL: if you set SHARED_TOKEN in the Apps Script, put the same word here.
+        const SAVE_TOKEN = "";
+        const SHEET_HEADERS = ['Your name','Metaphor','Definition','What it wants','What it refuses','What it teaches','Tension 1 left','Tension 1 right','Position 1','Tension 2 left','Tension 2 right','Position 2','Opposite metaphor','Why opposite'];
+
+        function myPlacedOnCurrent(){
+            return currentDataSet.filter(p => p.myCoords && p.myCoords[xAxis] != null && p.myCoords[yAxis] != null);
+        }
+        function updateCaptureProgress(){
+            const n = myPlacedOnCurrent().length;
+            const el = document.getElementById('captureProgress');
+            const bar = document.getElementById('captureBar');
+            if (el) el.textContent = 'Placed ' + n + ' of ' + PLACE_TARGET + ' on the current tensions' + (n >= PLACE_TARGET ? ' ✓' : '');
+            if (bar) bar.classList.toggle('ready', n >= PLACE_TARGET);
+        }
+        function buildPlacementRows(name){
+            const ex = AXIS_ENDPOINTS[xAxis] || {}, ey = AXIS_ENDPOINTS[yAxis] || {};
+            return myPlacedOnCurrent().map(p => ([
+                name, p.name || '', '', '', '', '',
+                ex.left || '', ex.right || '', Math.round(p.myCoords[xAxis]),
+                ey.left || '', ey.right || '', Math.round(p.myCoords[yAxis]),
+                '', ''
+            ]));
+        }
+        function rowsToCSV(rows, withHeader){
+            const cell = c => { c = String(c == null ? '' : c); return /[",\n]/.test(c) ? '"' + c.replace(/"/g,'""') + '"' : c; };
+            const all = withHeader ? [SHEET_HEADERS].concat(rows) : rows;
+            return all.map(r => r.map(cell).join(',')).join('\n');
+        }
+        function captureName(){
+            const el = document.getElementById('captureName');
+            return el ? el.value.trim() : '';
+        }
+        function requireName(){
+            const el = document.getElementById('captureName');
+            const name = captureName();
+            if (!name) { if (el) { el.classList.add('needs'); el.focus(); } return null; }
+            if (el) el.classList.remove('needs');
+            return name;
+        }
+        function captureFlash(msg){ const el = document.getElementById('captureMsg'); if (el) el.textContent = msg; }
+        function saveMyPlacements(){
+            const name = requireName(); if (!name) return;
+            const rows = buildPlacementRows(name);
+            if (!rows.length) { captureFlash('Drag at least one metaphor on the current tensions first.'); return; }
+            if (SAVE_ENDPOINT) {
+                try {
+                    fetch(SAVE_ENDPOINT, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
+                        body: JSON.stringify({ headers: SHEET_HEADERS, rows: rows, token: SAVE_TOKEN }) });
+                    captureFlash('Sent ' + rows.length + ' placements to the class sheet. Thank you, ' + name + '.');
+                } catch (e) { captureFlash('Could not reach the sheet — try Copy rows instead.'); }
+                return;
+            }
+            const csv = rowsToCSV(rows, true);
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'placements-' + slugify(name) + '.csv';
+            document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+            captureFlash('Saved ' + rows.length + ' placements. Submit the file where your instructor asked.');
+        }
+        function copyMyPlacements(){
+            const name = requireName(); if (!name) return;
+            const rows = buildPlacementRows(name);
+            if (!rows.length) { captureFlash('Drag at least one metaphor on the current tensions first.'); return; }
+            const text = rowsToCSV(rows, false);
+            if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => captureFlash('Copied ' + rows.length + ' rows — paste them under the headers in the class sheet.'));
+            else captureFlash('Copy not available in this browser — use Save my placements.');
+        }
+        function setupCapture(){
+            const s = document.getElementById('captureSave'); if (s) s.addEventListener('click', saveMyPlacements);
+            const c = document.getElementById('captureCopy'); if (c) c.addEventListener('click', copyMyPlacements);
+            updateCaptureProgress();
+        }
+
         // ---- guided exploration prompts ----
         const EXPLORE_PROMPTS = [
             { label: 'Start here', text: 'Pick a tension for the horizontal axis and one for the vertical, then click a metaphor to read what it foregrounds and what it hides.' },
@@ -2402,6 +2506,7 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
             updateEdgeLabels();
             updateAxisReadout();
             updateBackgroundPattern();
+            if (typeof updateCaptureProgress === 'function') updateCaptureProgress();
 
             const positionElements = document.querySelectorAll('.position');
             positionElements.forEach((element, index) => {
