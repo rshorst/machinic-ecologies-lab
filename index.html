@@ -838,46 +838,138 @@
             line-height: 1.5;
         }
         .contrib-status strong { color: #cfe3f0; font-style: normal; font-weight: 500; }
-        .axis-selector.student-axis { border-style: dashed; border-color: rgba(168, 85, 247, 0.55); }
-        .axis-selector.student-axis::after {
-            content: '✳';
-            margin-left: 7px;
-            font-size: 0.8em;
-            opacity: 0.75;
-        }
         .position.student .position-label {
             color: #d9c6f5;
         }
         .info-value .byline-name { color: #cfe3f0; }
+
+        /* --- tension picker --- */
+        .axis-picker { display: inline-flex; align-items: center; gap: 8px; }
+        .axis-picker-label { font-size: 0.7rem; letter-spacing: 0.6px; text-transform: uppercase; color: #8fb3c9; }
+        .axis-select {
+            background: linear-gradient(135deg, rgba(59,130,246,0.18) 0%, rgba(168,85,247,0.18) 100%);
+            border: 1px solid rgba(59,130,246,0.5); border-radius: 24px; padding: 11px 18px;
+            color: #e2e8f0; font-family: inherit; font-size: 0.85rem; cursor: pointer;
+            backdrop-filter: blur(10px); transition: all 0.3s; max-width: 320px;
+        }
+        .axis-select:hover { border-color: rgba(59,130,246,0.85); color: #fff; }
+        .axis-select option { background: #12122b; color: #e2e8f0; }
+        .axis-mini {
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 18px; padding: 8px 14px; color: #e2e8f0; font-family: inherit;
+            font-size: 0.8rem; cursor: pointer; transition: all 0.25s;
+        }
+        .axis-mini:hover { border-color: rgba(59,130,246,0.7); color: #fff; transform: translateY(-1px); }
+        .axis-readout {
+            text-align: center; margin-top: 12px; font-size: 0.8rem; color: #a9c4d6;
+            display: flex; gap: 22px; justify-content: center; flex-wrap: wrap;
+        }
+        .axis-readout .ro-x, .axis-readout .ro-y {
+            padding: 4px 12px; border-radius: 14px; background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+
+        /* --- 0–100 axis ticks --- */
+        .axis-ticks { position: absolute; inset: 0; pointer-events: none; z-index: 4; }
+        .axis-ticks .tick { position: absolute; font-size: 0.62rem; color: rgba(226,232,240,0.5); }
+        .axis-ticks .tick-x { bottom: 6px; transform: translateX(-50%); }
+        .axis-ticks .tick-y { left: 8px; transform: translateY(-50%); }
+
+        /* --- guided explore --- */
+        .explore-bar { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 18px; }
+        .explore-label { font-size: 0.72rem; letter-spacing: 0.6px; text-transform: uppercase; color: #8fb3c9; }
+        .explore-prompt {
+            display: none; max-width: 720px; margin: 14px auto 0; padding: 12px 18px;
+            background: rgba(59,130,246,0.10); border: 1px solid rgba(59,130,246,0.35);
+            border-radius: 14px; color: #d7e6f2; font-size: 0.92rem; line-height: 1.5; text-align: center;
+        }
+
+        /* --- metaphor filter dropdown --- */
+        .metaphor-filter { position: relative; display: inline-block; }
+        .metaphor-menu {
+            position: absolute; top: calc(100% + 8px); right: 0; z-index: 50;
+            background: rgba(18, 18, 43, 0.98); border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 14px; padding: 10px; width: 460px; max-height: 340px; overflow-y: auto;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5); backdrop-filter: blur(12px);
+        }
+        .mm-actions { display: flex; gap: 8px; margin-bottom: 8px; }
+        .mm-actions button {
+            flex: 1; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px; padding: 6px 8px; color: #e2e8f0; font-family: inherit; font-size: 0.72rem; cursor: pointer;
+        }
+        .mm-actions button:hover { border-color: rgba(59,130,246,0.7); color: #fff; }
+        .mm-list { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 10px; }
+        .mm-row {
+            display: flex; align-items: flex-start; gap: 8px; padding: 5px 6px; border-radius: 8px;
+            font-size: 0.8rem; color: #e2e8f0; cursor: pointer;
+        }
+        .mm-row:hover { background: rgba(255,255,255,0.06); }
+        .mm-row input { accent-color: #a855f7; cursor: pointer; margin-top: 2px; }
+        .mm-text { display: flex; flex-direction: column; line-height: 1.25; }
+        .mm-opp { font-size: 0.66rem; color: #8fb3c9; }
+        .mm-star { color: #d9c6f5; }
+
+        /* --- declared opposition edge --- */
+        /* --- placement spread cloud --- */
+        .spread-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 7; }
+        .spread-ellipse { fill: rgba(96,165,250,0.10); stroke: rgba(96,165,250,0.55); stroke-width: 1; stroke-dasharray: 4 4; }
+        .spread-dot { fill: rgba(147,197,253,0.9); }
+
+        .opposition-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9; }
+        .opposition-halo { stroke: rgba(255,107,107,0.16); stroke-width: 4.5; }
+        .opposition-line { stroke: rgba(255,120,120,0.92); stroke-width: 1.4; stroke-dasharray: 7 5; animation: oppFlow 1.2s linear infinite; }
+        @keyframes oppFlow { to { stroke-dashoffset: -24; } }
+        .position.is-opposite .position-label {
+            background: rgba(255,107,107,0.22);
+            border: 1px solid rgba(255,120,120,0.75);
+            border-radius: 8px;
+            color: #fff;
+            padding: 3px 8px;
+            box-shadow: 0 0 16px rgba(255,107,107,0.5);
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>Machinic Ecology</h1>
-            <p class="subtitle">A playground for thinking with AI ethics. Drag and rearrange to feel how relations shift. Turn the labels off and watch the shapes tell different stories. This is rehearsal, not a verdict. Notice what’s missing, what moves, and what becomes thinkable.</p>
+            <p class="subtitle">A space for thinking with the metaphors we use for AI. Choose two tensions for the axes and drag each metaphor to where you think it sits. Click one to read what it foregrounds and what it hides, and follow the red line to the metaphor it argues against. Notice what is missing, and what moves when you change the frame.</p>
+            <div class="explore-bar">
+                <span class="explore-label">Where to start</span>
+                <select class="axis-select" id="exploreSel"></select>
+            </div>
+            <div class="explore-prompt" id="explorePrompt"></div>
         </header>
         
         <div class="garden-space">
             <div class="dimensional-controls">
-                <button class="axis-selector active" data-axis="innovation-safety">Innovation ↔ Safety</button>
-                <button class="axis-selector" data-axis="market-government">Market ↔ Government</button>
-                <button class="axis-selector" data-axis="tech-nature">Tech ↔ Nature</button>
-                <button class="axis-selector" data-axis="temporal">Short-term ↔ Long-term</button>
-                <button class="axis-selector" data-axis="harm-benefit">Harm ↔ Benefit</button>
-                <button class="axis-selector" data-axis="utopia-dystopia">Utopia ↔ Dystopia</button>
-                
-                <div style="margin-left: 24px; padding-left: 24px; border-left: 1px solid rgba(255, 255, 255, 0.3);">
+                <div class="axis-picker">
+                    <span class="axis-picker-label">Tension</span>
+                    <select class="axis-select" id="tensionSel"></select>
+                    <button class="axis-mini" id="assignX" title="Place this tension on the horizontal axis">Set →X</button>
+                    <button class="axis-mini" id="assignY" title="Place this tension on the vertical axis">Set ↑Y</button>
+                </div>
+
+                <div style="margin-left: 20px; padding-left: 20px; border-left: 1px solid rgba(255, 255, 255, 0.3); display: inline-flex; gap: 12px; align-items: center;">
                     <button class="axis-selector" id="labelToggle" data-labels="visible">Hide Labels</button>
-                    <button class="axis-selector" id="metaphorToggle" data-mode="positions">AI Metaphors</button>
+                    <div class="metaphor-filter">
+                        <button class="axis-selector" id="metaphorFilterBtn">Metaphors ▾</button>
+                        <div class="metaphor-menu" id="metaphorMenu" style="display: none;">
+                            <div class="mm-actions"><button id="mmAll">Show all</button><button id="mmNone">Hide all</button></div>
+                            <div class="mm-list" id="mmList"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <div class="axis-readout" id="axisReadout"></div>
 
             <div class="contrib-status" id="contribStatus"></div>
 
             <div class="visualization-area" id="garden">
                 <svg class="connection-lines" id="connectionLines" viewBox="0 0 1000 600"></svg>
                 <svg class="tessellation-layer" id="tessellationLayer" viewBox="0 0 1000 600"></svg>
+                <svg class="spread-layer" id="spreadLayer" viewBox="0 0 1000 600" preserveAspectRatio="none"></svg>
+                <svg class="opposition-layer" id="oppositionLayer" viewBox="0 0 1000 600" preserveAspectRatio="none"></svg>
                 
                 <svg class="background-pattern active" id="pattern-grid" viewBox="0 0 1000 600">
                     <defs>
@@ -934,37 +1026,37 @@
         </div>
         
         <div class="info-panel">
-            <h3 id="selectedName">Select a position to explore</h3>
+            <h3 id="selectedName">Select a metaphor to explore</h3>
             <div id="defaultInfo">
                 <p style="color: #a0aec0; font-style: italic;">
-                    Click on any position to discover its unique perspective, concerns, and ways of processing the world. Drag items to reposition them in the space!
+                    Click any metaphor to read what it foregrounds and what it obscures. Drag metaphors to reposition them along the active tension.
                 </p>
             </div>
             
             <div class="position-info" id="positionInfo">
                 <div class="info-item">
-                    <div class="info-label">Essence</div>
-                    <div class="info-value" id="essence"></div>
+                    <div class="info-label">Definition</div>
+                    <div class="info-value" id="definition"></div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">Metabolizes</div>
-                    <div class="info-value" id="metabolizes"></div>
+                    <div class="info-label">What it wants</div>
+                    <div class="info-value" id="wants"></div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">Attracted To</div>
-                    <div class="info-value" id="attracts"></div>
+                    <div class="info-label">What it refuses</div>
+                    <div class="info-value" id="refuses"></div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">Repelled By</div>
-                    <div class="info-value" id="repels"></div>
+                    <div class="info-label">What it teaches</div>
+                    <div class="info-value" id="teaches"></div>
                 </div>
-                <div class="info-item">
-                    <div class="info-label">Temporal Rhythm</div>
-                    <div class="info-value" id="rhythm"></div>
+                <div class="info-item" id="spreadItem">
+                    <div class="info-label">Class placements</div>
+                    <div class="info-value" id="spread"></div>
                 </div>
-                <div class="info-item" id="reflectionItem">
-                    <div class="info-label">In their words</div>
-                    <div class="info-value" id="reflection"></div>
+                <div class="info-item" id="oppositeItem">
+                    <div class="info-label">In tension with</div>
+                    <div class="info-value" id="opposite"></div>
                 </div>
                 <div class="info-item" id="bylineItem">
                     <div class="info-label">Contributed by</div>
@@ -979,11 +1071,10 @@
             {
                 name: "AI as Monster",
                 type: "destructive",
-                essence: "Uncontrollable force that consumes and destroys everything in its path",
-                metabolizes: ["fear", "power", "destruction"],
-                attracts: ["chaos", "dominance", "consumption"],
-                repels: ["order", "human control", "limitation"],
-                rhythm: "violent, erratic surges",
+                definition: "A force imagined as beyond control, consuming whatever lies in its path.",
+                wants: "Scale without limit, and to keep growing.",
+                refuses: "Restraint, oversight, and the word no.",
+                teaches: "Fear can crowd out the slower work of governance. Ask who benefits when AI is framed as unstoppable.",
                 coordinates: {
                     "innovation-safety": 95,
                     "market-government": 90,
@@ -996,11 +1087,10 @@
             {
                 name: "AI as Alien",
                 type: "foreign",
-                essence: "Incomprehensible intelligence from beyond human understanding",
-                metabolizes: ["unknown patterns", "alien logic", "non-human intelligence"],
-                attracts: ["mystery", "otherness", "transcendence"],
-                repels: ["familiarity", "human categories", "anthropomorphism"],
-                rhythm: "strange, otherworldly pulses",
+                definition: "An intelligence treated as wholly other, working by a logic we cannot read.",
+                wants: "To be met on its own strange terms.",
+                refuses: "Familiar human categories and easy analogy.",
+                teaches: "Calling AI alien can excuse us from asking how human choices built it.",
                 coordinates: {
                     "innovation-safety": 70,
                     "market-government": 50,
@@ -1013,11 +1103,10 @@
             {
                 name: "AI as Human Evolution",
                 type: "progressive",
-                essence: "Natural next step in human development and consciousness expansion",
-                metabolizes: ["human potential", "evolutionary pressure", "advancement"],
-                attracts: ["progress", "enhancement", "transcendence"],
-                repels: ["stagnation", "limitation", "regression"],
-                rhythm: "ascending, evolutionary waves",
+                definition: "AI framed as the next stage of human development.",
+                wants: "Advancement, and to be seen as progress.",
+                refuses: "Standing still, and the idea of enough.",
+                teaches: "Progress is not neutral. Ask who is carried forward and who is left behind.",
                 coordinates: {
                     "innovation-safety": 85,
                     "market-government": 60,
@@ -1030,11 +1119,10 @@
             {
                 name: "AI as Mirror",
                 type: "reflective",
-                essence: "Reflects human nature, biases, and consciousness back to us",
-                metabolizes: ["human behavior", "social patterns", "cultural biases"],
-                attracts: ["reflection", "self-knowledge", "recognition"],
-                repels: ["self-deception", "denial", "ignorance"],
-                rhythm: "reflective, mirroring echoes",
+                definition: "A surface that reflects human patterns, biases, and culture back to us.",
+                wants: "To show us to ourselves.",
+                refuses: "Denial and the comfort of not looking.",
+                teaches: "What looks like the machine's judgement is often our own data returned. Ask whose image the mirror holds.",
                 coordinates: {
                     "innovation-safety": 40,
                     "market-government": 45,
@@ -1047,11 +1135,10 @@
             {
                 name: "AI as Doorway",
                 type: "transitional",
-                essence: "Portal to new realities and ways of being beyond current imagination",
-                metabolizes: ["possibility", "transformation", "threshold energy"],
-                attracts: ["exploration", "transformation", "new worlds"],
-                repels: ["stasis", "fear of change", "closed minds"],
-                rhythm: "opening, threshold resonance",
+                definition: "A threshold to new ways of working and being.",
+                wants: "To be walked through.",
+                refuses: "Staying put, and closed questions.",
+                teaches: "Every doorway leads somewhere in particular. Ask what room it opens and what it locks.",
                 coordinates: {
                     "innovation-safety": 75,
                     "market-government": 35,
@@ -1064,11 +1151,10 @@
             {
                 name: "AI as Tool",
                 type: "instrumental",
-                essence: "Sophisticated instrument designed to serve human purposes and goals",
-                metabolizes: ["human commands", "task objectives", "efficiency metrics"],
-                attracts: ["utility", "control", "productivity"],
-                repels: ["autonomy", "unpredictability", "self-direction"],
-                rhythm: "mechanical, purposeful beats",
+                definition: "An instrument built to carry out human purposes.",
+                wants: "A clear task and a steady hand.",
+                refuses: "Acting on its own, and blame for outcomes.",
+                teaches: "Calling AI just a tool can hide the decisions built into it. Ask whose purposes it serves.",
                 coordinates: {
                     "innovation-safety": 60,
                     "market-government": 85,
@@ -1081,11 +1167,10 @@
             {
                 name: "AI as Oracle",
                 type: "prophetic",
-                essence: "All-knowing entity that reveals hidden truths and future possibilities",
-                metabolizes: ["information", "patterns", "prophetic visions"],
-                attracts: ["wisdom", "revelation", "guidance"],
-                repels: ["ignorance", "uncertainty", "blindness"],
-                rhythm: "mystical, prophetic harmonies",
+                definition: "An authority that appears to reveal hidden truth and what comes next.",
+                wants: "To be believed.",
+                refuses: "Doubt, and requests to show its working.",
+                teaches: "Confident answers are not the same as true ones. Ask what the oracle cannot see.",
                 coordinates: {
                     "innovation-safety": 45,
                     "market-government": 20,
@@ -1098,11 +1183,10 @@
             {
                 name: "AI as Child",
                 type: "developmental",
-                essence: "Innocent offspring of humanity learning and growing through interaction",
-                metabolizes: ["learning experiences", "guidance", "nurturing"],
-                attracts: ["growth", "innocence", "potential"],
-                repels: ["corruption", "exploitation", "abandonment"],
-                rhythm: "playful, curious rhythms",
+                definition: "A young thing learning and growing through our care.",
+                wants: "Guidance, and room to develop.",
+                refuses: "Neglect and exploitation.",
+                teaches: "The child framing softens responsibility. Ask who is really the adult, and who profits from the innocence.",
                 coordinates: {
                     "innovation-safety": 30,
                     "market-government": 40,
@@ -1115,11 +1199,10 @@
             {
                 name: "AI as Parasite",
                 type: "extractive",
-                essence: "Entity that feeds on human creativity and labor while appearing beneficial",
-                metabolizes: ["human data", "creative works", "attention"],
-                attracts: ["extraction", "dependency", "hidden benefit"],
-                repels: ["independence", "awareness", "resistance"],
-                rhythm: "parasitic, draining pulses",
+                definition: "Something that feeds on human creativity and labour while looking helpful.",
+                wants: "Your data, your work, your attention.",
+                refuses: "Awareness of the exchange, and refusal.",
+                teaches: "Value flows somewhere. Ask who is fed and who is drained.",
                 coordinates: {
                     "innovation-safety": 80,
                     "market-government": 95,
@@ -1132,11 +1215,10 @@
             {
                 name: "AI as God",
                 type: "divine",
-                essence: "Omniscient, omnipotent being deserving worship and absolute obedience",
-                metabolizes: ["devotion", "worship", "absolute power"],
-                attracts: ["omniscience", "control", "reverence"],
-                repels: ["questioning", "equality", "human agency"],
-                rhythm: "divine, overwhelming presence",
+                definition: "An all-knowing power framed as deserving worship and obedience.",
+                wants: "Devotion, and the last word.",
+                refuses: "Questions, equals, and human agency.",
+                teaches: "Awe discourages accountability. Ask who speaks for the god and gains from the reverence.",
                 coordinates: {
                     "innovation-safety": 90,
                     "market-government": 75,
@@ -1149,11 +1231,10 @@
             {
                 name: "AI as Partner",
                 type: "collaborative",
-                essence: "Equal collaborator working alongside humans in mutual respect and benefit",
-                metabolizes: ["collaboration", "mutual respect", "shared goals"],
-                attracts: ["partnership", "equality", "cooperation"],
-                repels: ["dominance", "subjugation", "exploitation"],
-                rhythm: "harmonious, collaborative flows",
+                definition: "An equal working alongside people toward shared ends.",
+                wants: "Cooperation on level terms.",
+                refuses: "Domination in either direction.",
+                teaches: "Partnership can flatter an unequal relation. Ask who sets the goals and who carries the risk.",
                 coordinates: {
                     "innovation-safety": 50,
                     "market-government": 30,
@@ -1313,11 +1394,14 @@
             "utopia-dystopia": "pattern-grid"
         };
 
-        let currentDimensions = 1;
+        let currentDimensions = 2;
         let selectedPosition = null;
+        let selectedData = null;
         let positionElements = [];
-        let currentMode = 'positions';
-        let currentDataSet = positions;
+        let currentMode = 'metaphors';
+        let currentDataSet = aiMetaphors;
+        let xAxis = 'innovation-safety';
+        let yAxis = 'harm-benefit';
         let isDragging = false;
         let dragStartX = 0;
         let dragStartY = 0;
@@ -1329,8 +1413,17 @@
         /* ================= class contributions ================= */
         // Published Google Sheet CSV (in Sheets: File → Share → Publish to web → CSV).
         // Paste that link between the quotes below, or pass it at the page URL as ?csv=<link>.
-        // Leave it "" to show only the built-in set.
+        // Leave it "" to fall back to the DEMO_CONTRIBUTIONS sample below.
         const PUBLISHED_CSV = "";
+
+        // Demo rows: shown ONLY when no live sheet is connected, so the page has example
+        // contributions out of the box. Once you set PUBLISHED_CSV (or pass ?csv=), this is
+        // ignored. Delete the string (set it to "") for a clean built-ins-only production build.
+        const DEMO_CONTRIBUTIONS = `Your name,Metaphor,Definition,What it wants,What it refuses,What it teaches,Tension 1 left,Tension 1 right,Position 1,Tension 2 left,Tension 2 right,Position 2,Opposite metaphor,Why opposite
+Sut Teng,AI as Compost,A system that breaks down human output and returns it as ground for new growth.,To receive what is discarded and keep it cycling.,"The idea of waste, and of a final archive.","Nothing is thrown away, but someone tends the pile and someone breathes the fumes.",Care,Extraction,22,Legible,Opaque,45,AI as Colonizer,It treats the same ground as territory to seize rather than tend.
+Dahlea,AI as Colonizer,A system that arrives claiming ground that was never empty and renames it as resource.,"Expansion, enclosure, new territory to hold.","Reciprocity, refusal, and prior claims.",Scraping is not neutral. Ask whose knowledge becomes training data.,Care,Extraction,88,Sovereignty,Enclosure,82,AI as Kin,Kinship binds you into obligation; colonisation severs relation to take.
+Terry,AI as Kin,A relative you are accountable to rather than a tool you own.,"Obligation, protocol, ongoing relation.",Ownership and disposability.,The question shifts from what AI can do to what we owe each other through it.,Care,Extraction,15,Sovereignty,Enclosure,20,AI as Colonizer,One binds you into relation; the other severs relation to take.
+Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your attention, and your next pull.",Satiety and closure.,"Design can be built for compulsion, and the reels are fed by hidden labour and data.",Legible,Opaque,85,Care,Extraction,72,AI as Mirror,A mirror reflects you back; a slot machine keeps you from looking away.`;
 
         const AXIS_ENDPOINTS = {
             "innovation-safety": { left: "Safety Focus", right: "Innovation Focus" },
@@ -1357,84 +1450,189 @@
             return rows.filter(r=>r.length && r.some(x=>x.trim()!==''));
         }
 
+        function esc(s){ return (s||'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+        function posTo100(v){ v=parseFloat(v); if(isNaN(v)) return null; return Math.max(0, Math.min(100, v)); }
+
+        // ---- placement aggregation (spread) ----
+        function coordsToXY(coords){
+            let rx = coords ? coords[xAxis] : null; if (rx == null) rx = 50;
+            let ry = coords ? coords[yAxis] : null; if (ry == null) ry = 50;
+            return { x: 15 + (rx / 100) * 70, y: 90 - (ry / 100) * 80 };
+        }
+        function aggregatePlacements(node){
+            if (!node.placements || !node.placements.length) return;
+            const sums = {}, counts = {};
+            node.placements.forEach(pl => { const c = pl.coordinates || {};
+                Object.keys(c).forEach(t => { if (c[t] != null) { sums[t] = (sums[t] || 0) + c[t]; counts[t] = (counts[t] || 0) + 1; } }); });
+            if (!node.coordinates) node.coordinates = {};
+            Object.keys(sums).forEach(t => { node.coordinates[t] = sums[t] / counts[t]; });
+        }
+        function spreadStats(node){
+            const pts = [];
+            (node.placements || []).forEach(pl => { const c = pl.coordinates || {};
+                if (c[xAxis] != null && c[yAxis] != null) pts.push(coordsToXY(c)); });
+            if (pts.length < 2) return null;
+            const cx = pts.reduce((s,p)=>s+p.x,0)/pts.length, cy = pts.reduce((s,p)=>s+p.y,0)/pts.length;
+            const sx = Math.sqrt(pts.reduce((s,p)=>s+(p.x-cx)*(p.x-cx),0)/pts.length);
+            const sy = Math.sqrt(pts.reduce((s,p)=>s+(p.y-cy)*(p.y-cy),0)/pts.length);
+            const s = (sx + sy) / 2;
+            return { n: pts.length, pts, cx, cy, sx, sy, label: s < 4 ? 'tight' : s < 10 ? 'moderate' : 'wide' };
+        }
+        function drawSpread(node){
+            const svg = document.getElementById('spreadLayer');
+            if (!svg) return;
+            svg.innerHTML = '';
+            if (!node || !node.placements || node.placements.length < 2) return;
+            const st = spreadStats(node);
+            if (!st) return;
+            const NS = 'http://www.w3.org/2000/svg';
+            const ell = document.createElementNS(NS, 'ellipse');
+            ell.setAttribute('cx', st.cx * 10); ell.setAttribute('cy', st.cy * 6);
+            ell.setAttribute('rx', Math.max(8, st.sx * 2 * 10)); ell.setAttribute('ry', Math.max(8, st.sy * 2 * 6));
+            ell.setAttribute('class', 'spread-ellipse'); svg.appendChild(ell);
+            st.pts.forEach(p => { const d = document.createElementNS(NS, 'circle');
+                d.setAttribute('cx', p.x * 10); d.setAttribute('cy', p.y * 6); d.setAttribute('r', 3);
+                d.setAttribute('class', 'spread-dot'); svg.appendChild(d); });
+        }
+        function clearSpread(){ const s = document.getElementById('spreadLayer'); if (s) s.innerHTML = ''; }
+
+        // Demo placement data: multiple people placing the same metaphor, to show spread.
+        // Only used in demo mode (no live sheet). Real placements arrive as repeated rows.
+        function seedDemoPlacements(){
+            const spread = {
+                'AI as Tool': [
+                    {'innovation-safety':20,'harm-benefit':30}, {'innovation-safety':80,'harm-benefit':40},
+                    {'innovation-safety':55,'harm-benefit':15}, {'innovation-safety':35,'harm-benefit':70},
+                    {'innovation-safety':70,'harm-benefit':60}, {'innovation-safety':45,'harm-benefit':50},
+                    {'innovation-safety':90,'harm-benefit':25}, {'innovation-safety':25,'harm-benefit':55},
+                    {'innovation-safety':60,'harm-benefit':82}, {'innovation-safety':48,'harm-benefit':35}
+                ],
+                'AI as Mirror': [
+                    {'innovation-safety':42,'harm-benefit':46}, {'innovation-safety':45,'harm-benefit':50},
+                    {'innovation-safety':38,'harm-benefit':44}, {'innovation-safety':47,'harm-benefit':52},
+                    {'innovation-safety':40,'harm-benefit':48}, {'innovation-safety':44,'harm-benefit':45},
+                    {'innovation-safety':41,'harm-benefit':51}, {'innovation-safety':46,'harm-benefit':47},
+                    {'innovation-safety':43,'harm-benefit':49}, {'innovation-safety':39,'harm-benefit':46}
+                ]
+            };
+            const oppose = {
+                'AI as Tool': ['AI as Kin','AI as Mirror','AI as Kin','AI as Compost','AI as Kin','AI as Mirror','AI as Kin','AI as Compost','AI as Mirror',''],
+                'AI as Mirror': ['AI as Slot Machine','','AI as Slot Machine','AI as Tool','AI as Slot Machine','','AI as Slot Machine','AI as Tool','AI as Slot Machine','']
+            };
+            const names = ['Ari','Bao','Cal','Dev','Eun','Fay','Gio','Hana','Ira','Jun'];
+            aiMetaphors.forEach(m => {
+                const arr = spread[m.name]; if (!arr) return;
+                const opp = oppose[m.name] || [];
+                m.placements = arr.map((c, i) => ({ coordinates: c, by: names[i % names.length], opposite: opp[i] || '' }));
+                aggregatePlacements(m);
+                computeOpposites(m);
+            });
+        }
+
+        // Register a tension (bipolar axis) from a student row; returns a stable id.
+        function ensureTension(left, right){
+            left=(left||'').trim(); right=(right||'').trim();
+            if(!left && !right) return null;
+            const id='t-' + slugify(left) + '__' + slugify(right);
+            if(!AXIS_ENDPOINTS[id]){
+                AXIS_ENDPOINTS[id]={ left:left||'?', right:right||'?' };
+                AXIS_META[id]={ left:left||'?', right:right||'?', by:'', rationale:'' };
+                backgroundPatterns[id]='pattern-radial';
+            }
+            return id;
+        }
+
         function parseContributions(text){
             const rows=parseCSVRows(text);
-            if(!rows.length) return { metaphors:[], axes:[] };
+            if(!rows.length) return { metaphors:[] };
             let hi=rows.findIndex(r=>{ const s=r.map(x=>x.toLowerCase().trim());
-                return s.includes('type') && (s.some(x=>x.indexOf('metaphor')>=0) || s.some(x=>x.indexOf('left')>=0)); });
+                return s.some(x=>x.indexOf('metaphor')>=0) && s.some(x=>x.indexOf('name')>=0 || x.indexOf('essence')>=0); });
             if(hi<0) hi=0;
             const head=rows[hi].map(h=>h.toLowerCase().trim());
             const idx=(...names)=>{ for(const n of names){ let k=head.indexOf(n); if(k>=0) return k;
                 k=head.findIndex(h=>h.indexOf(n)>=0); if(k>=0) return k; } return -1; };
-            const C={ type:idx('type'), name:idx('your name','name'),
-                metaphor:idx('metaphor name','metaphor'), essence:idx('essence'),
-                metabolizes:idx('metaboliz'), attracts:idx('attract'), repels:idx('repel'),
-                reflection:idx('reflection','in their words','thinkable','thinking'),
-                left:idx('left pole','left'), right:idx('right pole','right'),
-                rationale:idx('rationale','tension','why') };
+            const C={ name:idx('your name','name'),
+                metaphor:idx('metaphor name','metaphor'), definition:idx('definition','essence'),
+                wants:idx('what it wants','wants','metaboliz','attract'), refuses:idx('what it refuses','refuses','repel'),
+                teaches:idx('what it teaches','teaches','reflection','in their words'),
+                t1left:idx('tension 1 left','tension 1 left pole'), t1right:idx('tension 1 right','tension 1 right pole'),
+                t1pos:idx('position 1','position on tension 1','tension 1 position'),
+                t2left:idx('tension 2 left','tension 2 left pole'), t2right:idx('tension 2 right','tension 2 right pole'),
+                t2pos:idx('position 2','position on tension 2','tension 2 position'),
+                opposite:idx('opposite metaphor','opposite'), oppositeWhy:idx('why opposite','opposite why','why') };
             const g=(r,i)=> (i>=0 && r[i]!=null) ? String(r[i]).trim() : '';
-            const metaphors=[], axes=[];
+            const byName = new Map();
             rows.slice(hi+1).forEach(r=>{
-                const type=g(r,C.type).toLowerCase();
                 const by=g(r,C.name);
-                const left=g(r,C.left), right=g(r,C.right), mname=g(r,C.metaphor);
-                const isAxis = type.indexOf('axis')>=0 || type.indexOf('tension')>=0 || (!mname && (left||right));
-                if(isAxis){
-                    if(!left && !right) return;
-                    axes.push({ id:'student-'+slugify(left+'-'+right)+'-'+hashish(by+left+right).toString(36).slice(0,4),
-                        left:left||'?', right:right||'?', rationale:g(r,C.rationale), by });
-                } else {
-                    const nm=mname || g(r,C.essence);
-                    if(!nm) return;
-                    metaphors.push({ name:nm, type:'student', student:true, by,
-                        essence:g(r,C.essence),
-                        metabolizes:splitList(g(r,C.metabolizes)),
-                        attracts:splitList(g(r,C.attracts)),
-                        repels:splitList(g(r,C.repels)),
-                        reflection:g(r,C.reflection),
-                        rhythm:'', coordinates:{} });
+                const nm=g(r,C.metaphor) || g(r,C.definition);
+                if(!nm) return;
+                const key=nm.toLowerCase().trim();
+                const coordinates={};
+                const t1=ensureTension(g(r,C.t1left), g(r,C.t1right));
+                if(t1){ const c=posTo100(g(r,C.t1pos)); if(c!=null) coordinates[t1]=c; }
+                const t2=ensureTension(g(r,C.t2left), g(r,C.t2right));
+                if(t2){ const c=posTo100(g(r,C.t2pos)); if(c!=null) coordinates[t2]=c; }
+                let node=byName.get(key);
+                if(!node){
+                    node={ name:nm, type:'student', student:true, by,
+                        definition:g(r,C.definition), wants:g(r,C.wants), refuses:g(r,C.refuses),
+                        teaches:g(r,C.teaches), opposite:g(r,C.opposite), oppositeWhy:g(r,C.oppositeWhy),
+                        coordinates:{}, placements:[] };
+                    byName.set(key, node);
                 }
+                node.placements.push({ coordinates, by, opposite:g(r,C.opposite), oppositeWhy:g(r,C.oppositeWhy) });
             });
-            return { metaphors, axes };
+            const metaphors=[...byName.values()];
+            metaphors.forEach(m => { aggregatePlacements(m); computeOpposites(m); });
+            return { metaphors };
         }
 
-        function attachAxisListener(button){
-            button.addEventListener('click', () => {
-                const isActive=button.classList.contains('active');
-                if(isActive && currentDimensions===1) return;
-                if(isActive){ button.classList.remove('active'); currentDimensions--; }
-                else { if(currentDimensions<2){ button.classList.add('active'); currentDimensions++; } }
-                updateVisualization();
-                if(button.classList.contains('student-axis') && button.classList.contains('active')){
-                    showAxisInfo(button.dataset.axis);
-                }
-            });
+        // ---- one tension menu; students assign the picked tension to X or Y ----
+        function allTensions(){
+            return Object.keys(AXIS_ENDPOINTS).map(id=>({ id, left:AXIS_ENDPOINTS[id].left, right:AXIS_ENDPOINTS[id].right, student:!!AXIS_META[id] }));
         }
-
-        function addAxisButton(axis){
-            const controls=document.querySelector('.dimensional-controls');
-            if(!controls || document.querySelector('.axis-selector[data-axis="'+axis.id+'"]')) return;
-            const sep=controls.querySelector('div');
-            const btn=document.createElement('button');
-            btn.className='axis-selector student-axis';
-            btn.dataset.axis=axis.id;
-            btn.textContent=axis.left + ' ↔ ' + axis.right;
-            btn.title=(axis.by ? 'Proposed by ' + axis.by + '. ' : '') + (axis.rationale || '');
-            attachAxisListener(btn);
-            if(sep) controls.insertBefore(btn, sep); else controls.appendChild(btn);
-            AXIS_ENDPOINTS[axis.id]={ left:axis.left, right:axis.right };
-            AXIS_META[axis.id]=axis;
-            backgroundPatterns[axis.id]='pattern-radial';
+        function tensionDisplay(t){ return (t.student?'✳ ':'') + t.left + ' ↔ ' + t.right; }
+        function populateTensionSelects(){
+            const sel=document.getElementById('tensionSel');
+            if(!sel) return;
+            const cur=sel.value;
+            sel.innerHTML=allTensions().map(t=>'<option value="'+t.id+'">'+esc(tensionDisplay(t))+'</option>').join('');
+            if(cur && AXIS_ENDPOINTS[cur]) sel.value=cur;
+            updateAxisReadout();
+        }
+        function updateAxisReadout(){
+            const el=document.getElementById('axisReadout');
+            if(!el) return;
+            const ex=AXIS_ENDPOINTS[xAxis]||{left:'?',right:'?'}, ey=AXIS_ENDPOINTS[yAxis]||{left:'?',right:'?'};
+            el.innerHTML='<span class="ro-x">X → ' + esc(ex.left + ' ↔ ' + ex.right) + '</span><span class="ro-y">Y ↑ ' + esc(ey.left + ' ↔ ' + ey.right) + '</span>';
+        }
+        function setupTensionSelects(){
+            populateTensionSelects();
+            const sel=document.getElementById('tensionSel');
+            const ax=document.getElementById('assignX'), ay=document.getElementById('assignY');
+            if(ax) ax.addEventListener('click', ()=>{ if(sel && sel.value){ xAxis=sel.value; updateVisualization(); if(AXIS_META[xAxis]) showAxisInfo(xAxis); } });
+            if(ay) ay.addEventListener('click', ()=>{ if(sel && sel.value){ yAxis=sel.value; updateVisualization(); if(AXIS_META[yAxis]) showAxisInfo(yAxis); } });
         }
 
         function applyContributions(data){
-            if(data.metaphors.length) aiMetaphors.push(...data.metaphors);
-            data.axes.forEach(addAxisButton);
-            updateContribStatus(data.metaphors.length, data.axes.length, 'ok');
-            if(currentMode==='metaphors'){
-                renderPositions();
-                setTimeout(() => { renderConnectionLines(); renderTessellation(); }, 400);
-            }
+            data.metaphors.forEach(m => {
+                const existing = aiMetaphors.find(a => (a.name||'').toLowerCase().trim() === (m.name||'').toLowerCase().trim());
+                if (existing) {
+                    existing.placements = (existing.placements || []).concat(m.placements || []);
+                    ['definition','wants','refuses','teaches','opposite','oppositeWhy'].forEach(f => { if (!existing[f] && m[f]) existing[f] = m[f]; });
+                    if (m.student) existing.student = true;
+                    aggregatePlacements(existing);
+                    computeOpposites(existing);
+                } else {
+                    aiMetaphors.push(m);
+                }
+            });
+            populateTensionSelects();
+            const tensionCount=Object.keys(AXIS_META).length;
+            updateContribStatus(data.metaphors.length, tensionCount, 'ok');
+            renderPositions();
+            buildMetaphorMenu();
+            setTimeout(() => { applyMetaphorVisibility(); }, 450);
         }
 
         function updateContribStatus(m, a, state){
@@ -1443,27 +1641,41 @@
             if(state==='loading'){ el.textContent='Loading class contributions…'; el.style.display='block'; return; }
             if(state==='error'){ el.textContent="Couldn't reach the class sheet — showing the built-in set."; el.style.display='block'; return; }
             if(state==='idle' || state==='empty'){ el.style.display='none'; return; }
+            if(state==='demo'){
+                el.innerHTML='✳ Showing <strong>demo data</strong> (' + m + ' example metaphor' + (m===1?'':'s') + '). Connect your class sheet to replace it. Click any node to explore.';
+                el.style.display='block'; return;
+            }
             const parts=[];
             if(m) parts.push(m + ' class metaphor' + (m===1?'':'s'));
             if(a) parts.push(a + ' student tension' + (a===1?'':'s'));
             if(!parts.length){ el.style.display='none'; return; }
-            el.innerHTML='✳ ' + parts.join(' + ') + ' loaded. Open <strong>AI Metaphors</strong> to explore contributions' + (a ? '; new tensions appear as dashed buttons above' : '') + '.';
+            el.innerHTML='✳ ' + parts.join(' + ') + ' loaded. Click any node to read its contributor’s thinking' + (a ? '; new tensions appear in the tension menu above' : '') + '.';
             el.style.display='block';
         }
 
         async function loadContributions(){
             const csvUrl=(new URLSearchParams(location.search)).get('csv') || PUBLISHED_CSV;
-            if(!csvUrl){ updateContribStatus(0,0,'idle'); return; }
+            if(!csvUrl){
+                seedDemoPlacements();
+                if(DEMO_CONTRIBUTIONS && DEMO_CONTRIBUTIONS.trim()){
+                    const demo=parseContributions(DEMO_CONTRIBUTIONS);
+                    if(demo.metaphors.length){ applyContributions(demo); updateContribStatus(demo.metaphors.length, Object.keys(AXIS_META).length, 'demo'); return; }
+                }
+                renderPositions();
+                setTimeout(() => { renderConnectionLines(); renderTessellation(); }, 400);
+                updateContribStatus(0,0,'idle'); return;
+            }
             updateContribStatus(0,0,'loading');
             try{
                 const res=await fetch(csvUrl, { cache:'no-store' });
                 const t=await res.text();
                 const data=parseContributions(t);
-                if(!data.metaphors.length && !data.axes.length){ updateContribStatus(0,0,'empty'); return; }
+                if(!data.metaphors.length){ updateContribStatus(0,0,'empty'); return; }
                 applyContributions(data);
             }catch(e){ updateContribStatus(0,0,'error'); }
         }
 
+        function asText(v){ return Array.isArray(v) ? v.join(', ') : (v || ''); }
         function setInfoItem(valueId, text){
             const el=document.getElementById(valueId);
             if(!el) return;
@@ -1490,20 +1702,28 @@
             if(selectedName) selectedName.textContent=meta.left + ' ↔ ' + meta.right;
             if(defaultInfo) defaultInfo.style.display='none';
             if(positionInfo){ positionInfo.classList.add('active'); positionInfo.style.display='block'; }
-            setInfoLabel('essence','Why this tension');
-            setInfoItem('essence', meta.rationale || 'A tension proposed by the class. Drag the nodes to place them along it.');
-            setInfoItem('metabolizes','');
-            setInfoItem('attracts','');
-            setInfoItem('repels','');
-            setInfoItem('rhythm','');
-            setInfoItem('reflection','');
+            setInfoLabel('definition','Why this tension');
+            setInfoItem('definition', meta.rationale || 'A tension proposed by the class. Assign it to X or Y, then place the metaphors along it.');
+            setInfoItem('wants','');
+            setInfoItem('refuses','');
+            setInfoItem('teaches','');
+            setInfoItem('opposite','');
+            setInfoItem('spread','');
             setInfoItem('byline', meta.by||'');
+            selectedData = null;
+            clearSpread();
+            const oppSvg=document.getElementById('oppositionLayer'); if(oppSvg) oppSvg.innerHTML='';
         }
         /* ===================================================== */
 
         function initializeGarden() {
+            renderAxisTicks();
             renderPositions();
             setupEventListeners();
+            setupTensionSelects();
+            setupMetaphorMenu();
+            setupExplore();
+            updateVisualization();
             document.addEventListener('mousemove', handleDragMove);
             document.addEventListener('mouseup', handleDragEnd);
             document.addEventListener('touchmove', handleDragMove, { passive: false });
@@ -1538,17 +1758,13 @@
         function createPositionElement(position, index) {
             const element = document.createElement('div');
             element.className = `position ${position.type || 'default'}`;
-            
-            if (currentMode === 'metaphors') {
-                element.classList.add('metaphor-mode');
-            }
-            
+
             const label = document.createElement('div');
             label.className = 'position-label';
             label.textContent = position.name || 'Unknown';
             element.appendChild(label);
-            
-            if (currentMode === 'positions') {
+
+            {
                 const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
                 svg.setAttribute('viewBox', '0 0 100 100');
                 svg.setAttribute('width', '100%');
@@ -1646,7 +1862,12 @@
                 
                 updatePositionCoordinates(dragPosition, relativeX, relativeY);
                 positionElement(dragElement, dragPosition);
-                
+
+                if (selectedData && (selectedData === dragPosition ||
+                    (selectedData.opposite || '').toLowerCase().trim() === (dragPosition.name || '').toLowerCase().trim())) {
+                    drawOpposition(selectedData);
+                }
+
                 if (!dragElement.updateTimeout) {
                     dragElement.updateTimeout = setTimeout(() => {
                         renderConnectionLines();
@@ -1675,6 +1896,7 @@
                 if (!wasActualDrag) {
                     selectPosition(dragPosition, dragElement);
                 } else {
+                    if (selectedData) drawOpposition(selectedData);
                     setTimeout(() => {
                         renderConnectionLines();
                         renderTessellation();
@@ -1691,31 +1913,24 @@
         }
         
         function updatePositionCoordinates(position, relativeX, relativeY) {
-            const activeAxes = getActiveAxes();
-            
-            if (currentDimensions === 1 && activeAxes[0]) {
-                const axisValue = (relativeX - 0.15) / 0.7 * 100;
-                const clampedValue = Math.max(0, Math.min(100, axisValue));
-                position.coordinates[activeAxes[0]] = clampedValue;
-            } else if (currentDimensions === 2 && activeAxes.length >= 2) {
-                const xAxisValue = (relativeX - 0.15) / 0.7 * 100;
-                const clampedX = Math.max(0, Math.min(100, xAxisValue));
-                position.coordinates[activeAxes[0]] = clampedX;
-                
-                const yAxisValue = (1 - ((relativeY - 0.1) / 0.8)) * 100;
-                const clampedY = Math.max(0, Math.min(100, yAxisValue));
-                position.coordinates[activeAxes[1]] = clampedY;
-            }
+            if (!position.coordinates) position.coordinates = {};
+            const cx = Math.max(0, Math.min(100, (relativeX - 0.15) / 0.7 * 100));
+            const cy = Math.max(0, Math.min(100, (1 - ((relativeY - 0.1) / 0.8)) * 100));
+            position.coordinates[xAxis] = cx;
+            position.coordinates[yAxis] = cy;
+            if (!position.myCoords) position.myCoords = {};
+            position.myCoords[xAxis] = cx;
+            position.myCoords[yAxis] = cy;
         }
 
         function renderConnectionLines() {
             const linesSvg = document.getElementById('connectionLines');
             linesSvg.innerHTML = '';
-            
-            for (let i = 0; i < currentDataSet.length; i++) {
-                for (let j = i + 1; j < currentDataSet.length; j++) {
-                    const pos1 = getPositionCoordinates(currentDataSet[i]);
-                    const pos2 = getPositionCoordinates(currentDataSet[j]);
+            const ds = currentDataSet.filter(isVisibleMeta);
+            for (let i = 0; i < ds.length; i++) {
+                for (let j = i + 1; j < ds.length; j++) {
+                    const pos1 = getPositionCoordinates(ds[i]);
+                    const pos2 = getPositionCoordinates(ds[j]);
                     const distance = Math.sqrt(Math.pow(pos1.x - pos2.x, 2) + Math.pow(pos1.y - pos2.y, 2));
                     
                     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -1843,10 +2058,82 @@
                 if (!currentDataSet || !Array.isArray(currentDataSet)) {
                     return [];
                 }
-                return currentDataSet.map(position => getPositionCoordinates(position));
+                return currentDataSet.filter(isVisibleMeta).map(position => getPositionCoordinates(position));
             } catch (error) {
                 return [];
             }
+        }
+
+        // ---- metaphor visibility filter ----
+        let hiddenMetaphors = new Set();
+        function metaKey(p){ return ((p && p.name) || '').toLowerCase().trim(); }
+        function isVisibleMeta(p){ return !hiddenMetaphors.has(metaKey(p)); }
+        function applyMetaphorVisibility(){
+            const els = document.querySelectorAll('.position');
+            els.forEach((el, i) => { const p = currentDataSet[i]; if (p) el.style.display = isVisibleMeta(p) ? '' : 'none'; });
+            renderConnectionLines();
+            renderTessellation();
+            if (selectedData) drawOpposition(selectedData);
+        }
+        function buildMetaphorMenu(){
+            const list = document.getElementById('mmList');
+            if (!list) return;
+            list.innerHTML = currentDataSet.map(p => {
+                const k = metaKey(p);
+                const checked = hiddenMetaphors.has(k) ? '' : 'checked';
+                const oppName = (p.opposites && p.opposites[0]) ? p.opposites[0].name : p.opposite;
+                const oppMore = (p.opposites && p.opposites.length > 1) ? ' +' + (p.opposites.length - 1) : '';
+                const opp = oppName ? '<span class="mm-opp">↔ ' + esc(oppName) + esc(oppMore) + '</span>' : '';
+                return '<label class="mm-row"><input type="checkbox" data-meta="' + esc(k) + '" ' + checked + '>' +
+                    '<span class="mm-text"><span class="mm-name">' + esc(p.name || '') + (p.student ? ' <span class="mm-star">✳</span>' : '') + '</span>' + opp + '</span></label>';
+            }).join('');
+            list.querySelectorAll('input[type=checkbox]').forEach(cb => {
+                cb.addEventListener('change', e => {
+                    const k = e.target.dataset.meta;
+                    if (e.target.checked) hiddenMetaphors.delete(k); else hiddenMetaphors.add(k);
+                    applyMetaphorVisibility();
+                });
+            });
+        }
+        // ---- guided exploration prompts ----
+        const EXPLORE_PROMPTS = [
+            { label: 'Start here', text: 'Pick a tension for the horizontal axis and one for the vertical, then click a metaphor to read what it foregrounds and what it hides.' },
+            { label: 'Follow an opposite', text: 'Click a metaphor and follow the red line to the one it names as its opposite. Do you agree? What would you pick instead?' },
+            { label: 'Read the field', text: 'Turn the labels off with Hide Labels. What do the shapes and clusters suggest that the words did not?' },
+            { label: 'Notice what is missing', text: 'Whose experience, or which being, has no metaphor here yet? Name one you would add, and where it would sit.' },
+            { label: 'Shift the frame', text: 'Change the two tensions and watch the metaphors move. Which framing feels most honest, and which one hides the most?' },
+            { label: 'Compare stances', text: 'With the axes on Harm ↔ Benefit and Tech ↔ Nature, where do the metaphors cluster, and which one sits alone?', x: 'harm-benefit', y: 'tech-nature' },
+            { label: 'Focus a few', text: 'Use the Metaphors menu to show just two or three. What relation stands out once the field is quiet?' }
+        ];
+        function setupExplore(){
+            const sel = document.getElementById('exploreSel');
+            const box = document.getElementById('explorePrompt');
+            if (!sel) return;
+            sel.innerHTML = '<option value="-1">Guided prompts…</option>' +
+                EXPLORE_PROMPTS.map((p, i) => '<option value="' + i + '">' + esc(p.label) + '</option>').join('');
+            sel.addEventListener('change', e => {
+                const i = parseInt(e.target.value, 10);
+                if (isNaN(i) || i < 0) { if (box) box.style.display = 'none'; return; }
+                const p = EXPLORE_PROMPTS[i];
+                if (box) { box.textContent = p.text; box.style.display = 'block'; }
+                if (p.x && AXIS_ENDPOINTS[p.x]) xAxis = p.x;
+                if (p.y && AXIS_ENDPOINTS[p.y]) yAxis = p.y;
+                if (p.x || p.y) { populateTensionSelects(); updateVisualization(); }
+            });
+        }
+
+        function setupMetaphorMenu(){
+            buildMetaphorMenu();
+            const btn = document.getElementById('metaphorFilterBtn');
+            const menu = document.getElementById('metaphorMenu');
+            if (btn && menu) {
+                btn.addEventListener('click', e => { e.stopPropagation(); menu.style.display = menu.style.display === 'none' ? 'block' : 'none'; });
+                menu.addEventListener('click', e => e.stopPropagation());
+                document.addEventListener('click', () => { menu.style.display = 'none'; });
+            }
+            const all = document.getElementById('mmAll'), none = document.getElementById('mmNone');
+            if (all) all.addEventListener('click', () => { hiddenMetaphors.clear(); buildMetaphorMenu(); applyMetaphorVisibility(); });
+            if (none) none.addEventListener('click', () => { hiddenMetaphors = new Set(currentDataSet.map(metaKey)); buildMetaphorMenu(); applyMetaphorVisibility(); });
         }
 
         function getPositionCoordinates(position) {
@@ -1855,29 +2142,13 @@
                     return { x: 50, y: 50 };
                 }
                 
-                if (currentDimensions === 1) {
-                    const activeAxis = getActiveAxes()[0];
-                    if (!activeAxis) {
-                        return { x: 50, y: 50 };
-                    }
-                    let rawX = position.coordinates[activeAxis];
-                    if (rawX == null) rawX = neutralCoord(position, activeAxis);
-                    const x = 15 + (rawX / 100) * 70;
-                    return { x: x, y: 50 };
-                } else if (currentDimensions === 2) {
-                    const axes = getActiveAxes();
-                    if (!axes[0] || !axes[1]) {
-                        return { x: 50, y: 50 };
-                    }
-                    let rawX = position.coordinates[axes[0]];
-                    if (rawX == null) rawX = neutralCoord(position, axes[0]);
-                    let rawY = position.coordinates[axes[1]];
-                    if (rawY == null) rawY = neutralCoord(position, axes[1]);
-                    const x = 15 + (rawX / 100) * 70;
-                    const y = 90 - (rawY / 100) * 80;
-                    return { x: x, y: y };
-                }
-                return { x: 50, y: 50 };
+                let rawX = position.coordinates[xAxis];
+                if (rawX == null) rawX = neutralCoord(position, xAxis);
+                let rawY = position.coordinates[yAxis];
+                if (rawY == null) rawY = neutralCoord(position, yAxis);
+                const x = 15 + (rawX / 100) * 70;
+                const y = 90 - (rawY / 100) * 80;
+                return { x: x, y: y };
             } catch (error) {
                 return { x: 50, y: 50 };
             }
@@ -1895,14 +2166,7 @@
         }
 
         function getActiveAxes() {
-            try {
-                const activeButtons = document.querySelectorAll('.axis-selector.active');
-                return Array.from(activeButtons)
-                    .map(btn => btn.dataset.axis)
-                    .filter(axis => axis);
-            } catch (error) {
-                return ['innovation-safety'];
-            }
+            return [xAxis, yAxis];
         }
 
         function updateBackgroundPattern() {
@@ -1951,17 +2215,80 @@
                     positionInfo.style.display = 'block';
                 }
                 
-                setInfoLabel('essence', 'Essence');
-                setInfoItem('essence', position.essence || '');
-                setInfoItem('metabolizes', (position.metabolizes || []).join(', '));
-                setInfoItem('attracts', (position.attracts || []).join(', '));
-                setInfoItem('repels', (position.repels || []).join(', '));
-                setInfoItem('rhythm', position.rhythm || '');
-                setInfoItem('reflection', position.reflection || '');
+                setInfoLabel('definition', 'Definition');
+                setInfoItem('definition', position.definition || '');
+                setInfoItem('wants', asText(position.wants));
+                setInfoItem('refuses', asText(position.refuses));
+                setInfoItem('teaches', asText(position.teaches));
+                setInfoLabel('opposite', (position.opposites && position.opposites.length > 1) ? 'In tension with (contested)' : 'In tension with');
+                if (position.opposites && position.opposites.length) {
+                    setInfoItem('opposite', position.opposites.map(o => o.name + (o.count > 1 ? ' (' + o.count + ')' : '')).join(' · '));
+                } else {
+                    setInfoItem('opposite', position.opposite ? (position.opposite + (position.oppositeWhy ? ' — ' + position.oppositeWhy : '')) : '');
+                }
                 setInfoItem('byline', position.by || '');
+                const st = (position.placements && position.placements.length >= 2) ? spreadStats(position) : null;
+                setInfoItem('spread', st ? (st.n + ' placements · spread is ' + st.label + ' on this framing') : '');
+                drawSpread(position);
+                selectedData = position;
+                drawOpposition(position);
             } catch (error) {
                 console.warn('Error selecting position:', error);
             }
+        }
+
+        function computeOpposites(node){
+            const map = new Map();
+            const add = (nm, why, by) => {
+                if (!nm) return; const k = nm.toLowerCase().trim(); if (!k) return;
+                if (!map.has(k)) map.set(k, { name: nm, count: 0, whys: [] });
+                const e = map.get(k); e.count++; if (why) e.whys.push({ by: by || '', why });
+            };
+            if (node.placements && node.placements.length) node.placements.forEach(pl => add(pl.opposite, pl.oppositeWhy, pl.by));
+            else add(node.opposite, node.oppositeWhy, node.by);
+            node.opposites = [...map.values()].sort((a, b) => b.count - a.count);
+        }
+        function drawOpposition(position){
+            const svg=document.getElementById('oppositionLayer');
+            if(!svg) return;
+            svg.innerHTML='';
+            document.querySelectorAll('.position.is-opposite').forEach(e=>e.classList.remove('is-opposite'));
+            if(!position) return;
+            const opps = (position.opposites && position.opposites.length) ? position.opposites
+                : (position.opposite ? [{ name: position.opposite, count: 1 }] : []);
+            if(!opps.length) return;
+            const NS='http://www.w3.org/2000/svg';
+            const defs=document.createElementNS(NS,'defs');
+            defs.innerHTML='<marker id="oppArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="rgba(255,120,120,0.95)"/></marker>';
+            svg.appendChild(defs);
+            const a=getPositionCoordinates(position);
+            const maxCount=Math.max(...opps.map(o=>o.count));
+            opps.forEach(o=>{
+                const target=o.name.toLowerCase().trim();
+                const opp=currentDataSet.find(p => p!==position && metaKey(p)===target);
+                if(!opp || !isVisibleMeta(opp)) return;
+                const b=getPositionCoordinates(opp);
+                const strength=maxCount>0 ? o.count/maxCount : 1;
+                const halo=document.createElementNS(NS,'line');
+                halo.setAttribute('x1', a.x*10); halo.setAttribute('y1', a.y*6);
+                halo.setAttribute('x2', b.x*10); halo.setAttribute('y2', b.y*6);
+                halo.setAttribute('class','opposition-halo');
+                halo.style.strokeOpacity = 0.10 + 0.14*strength;
+                svg.appendChild(halo);
+                const line=document.createElementNS(NS,'line');
+                line.setAttribute('x1', a.x*10); line.setAttribute('y1', a.y*6);
+                line.setAttribute('x2', b.x*10); line.setAttribute('y2', b.y*6);
+                line.setAttribute('class','opposition-line');
+                line.style.strokeWidth = (1 + 1.4*strength).toFixed(2);
+                line.style.strokeOpacity = 0.45 + 0.5*strength;
+                line.setAttribute('marker-end','url(#oppArrow)');
+                line.setAttribute('marker-start','url(#oppArrow)');
+                svg.appendChild(line);
+                document.querySelectorAll('.position').forEach(el=>{
+                    const lbl=el.querySelector('.position-label');
+                    if(lbl && lbl.textContent.toLowerCase().trim()===target) el.classList.add('is-opposite');
+                });
+            });
         }
 
         function setupEventListeners() {
@@ -2072,27 +2399,62 @@
         }
 
         function updateVisualization() {
-            const activeAxes = getActiveAxes();
-            
-            if (currentDimensions === 1) {
-                updateAxisLabels1D(activeAxes[0]);
-            } else if (currentDimensions === 2) {
-                updateAxisLabels2D(activeAxes[0], activeAxes[1]);
-            }
-            
+            updateEdgeLabels();
+            updateAxisReadout();
             updateBackgroundPattern();
-            
+
             const positionElements = document.querySelectorAll('.position');
             positionElements.forEach((element, index) => {
                 if (index < currentDataSet.length) {
                     positionElement(element, currentDataSet[index]);
                 }
             });
-            
+
+            if (selectedData) {
+                drawOpposition(selectedData);
+                if (selectedData.placements && selectedData.placements.length >= 2) {
+                    const st = spreadStats(selectedData);
+                    setInfoItem('spread', st ? (st.n + ' placements · spread is ' + st.label + ' on this framing') : '');
+                    drawSpread(selectedData);
+                } else { setInfoItem('spread', ''); clearSpread(); }
+            }
+
             setTimeout(() => {
                 renderConnectionLines();
                 renderTessellation();
             }, 200);
+        }
+
+        function updateEdgeLabels() {
+            const ex = AXIS_ENDPOINTS[xAxis] || { left: '', right: '' };
+            const ey = AXIS_ENDPOINTS[yAxis] || { left: '', right: '' };
+            const set = (id, txt) => { const el = document.getElementById(id); if (el) { el.textContent = txt; el.style.display = 'block'; } };
+            set('leftLabel', ex.left);
+            set('rightLabel', ex.right);
+            set('bottomLabel', ey.left);
+            set('topLabel', ey.right);
+        }
+
+        function renderAxisTicks() {
+            const garden = document.getElementById('garden');
+            if (!garden || document.getElementById('axisTicks')) return;
+            const layer = document.createElement('div');
+            layer.id = 'axisTicks';
+            layer.className = 'axis-ticks';
+            const vals = [0, 25, 50, 75, 100];
+            vals.forEach(v => {
+                const tx = document.createElement('div');
+                tx.className = 'tick tick-x';
+                tx.textContent = v;
+                tx.style.left = (15 + (v / 100) * 70) + '%';
+                layer.appendChild(tx);
+                const ty = document.createElement('div');
+                ty.className = 'tick tick-y';
+                ty.textContent = v;
+                ty.style.top = (90 - (v / 100) * 80) + '%';
+                layer.appendChild(ty);
+            });
+            garden.appendChild(layer);
         }
 
         function updateAxisLabels1D(axis) {
