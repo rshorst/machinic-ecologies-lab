@@ -1,0 +1,2156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="https://rshorst.github.io/Machinic-Ecologies/favicon.png" type="image/jpeg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machinic Ecology</title>
+    <meta name="description" content="A playground for thinking with AI ethics. Drag and rearrange to feel how relations shift. Turn the labels off and watch the shapes tell different stories. This is rehearsal, not a verdict. Notice what’s missing, what moves, and what becomes thinkable.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&display=swap');
+        
+        :root {
+            --position-circle-opacity: 0.8;
+            --tessellation-opacity: 0.7;
+            --connection-opacity: 0.7;
+            --big-circle-opacity: 0.7;
+            --position-enhanced-opacity: 0.7;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f0f23;
+            min-height: 100vh;
+            color: #e2e8f0;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 300;
+            color: #ffffff;
+            margin-bottom: 24px;
+            letter-spacing: -0.025em;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1rem;
+            color: #a0aec0;
+            font-weight: 300;
+            max-width: 540px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        
+        .garden-space {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            border-radius: 16px;
+            padding: 48px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            margin-bottom: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .garden-space::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .dimensional-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 48px;
+            opacity: 0;
+            transform: translateY(16px);
+            animation: fadeInUp 0.8s ease-out 0.3s forwards;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .axis-selector {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.875rem;
+            font-weight: 400;
+            color: #e2e8f0;
+            font-family: inherit;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .axis-selector::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .axis-selector:hover::before {
+            left: 100%;
+        }
+        
+        .axis-selector:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .axis-selector.active {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(168, 85, 247, 0.3) 100%);
+            border-color: rgba(59, 130, 246, 0.6);
+            color: #ffffff;
+            font-weight: 500;
+            box-shadow: 
+                0 0 20px rgba(59, 130, 246, 0.4),
+                0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .visualization-area {
+            position: relative;
+            width: 100%;
+            height: 560px;
+            border-radius: 12px;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out 0.6s forwards;
+            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+        
+        .background-pattern.active {
+            opacity: 1;
+        }
+        
+        .connection-lines, .tessellation-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.6;
+            z-index: 1;
+        }
+        
+        .tessellation-layer {
+            z-index: 2;
+            opacity: 0.5;
+        }
+        
+        .connection-line {
+            stroke: rgba(255, 255, 255, 0.5);
+            stroke-width: 0.8;
+            fill: none;
+            opacity: 0;
+            stroke-dasharray: 4 6;
+            animation: fadeInLine 2s ease-out forwards, connectionFlow 15s ease-in-out infinite;
+        }
+        
+        .connection-line.close {
+            stroke: rgba(255, 255, 255, 0.5);
+            stroke-width: 1.5;
+            stroke-dasharray: 6 4;
+            animation: fadeInLine 2s ease-out forwards, connectionPulse 12s ease-in-out infinite;
+        }
+        
+        .connection-line.very-close {
+            stroke: rgba(255, 255, 255, 0.8);
+            stroke-width: 2;
+            stroke-dasharray: 8 3;
+            animation: fadeInLine 2s ease-out forwards, connectionWave 18s ease-in-out infinite;
+        }
+        
+        .line-circle {
+            fill: rgba(255, 255, 255, .3);
+            stroke: rgba(255, 255, 255, 1);
+            stroke-width: 0.3;
+            opacity: 0;
+            animation: fadeInCircle 3s ease-out forwards, circleFlow 25s linear infinite;
+        }
+        
+        .line-circle.close {
+            fill: rgba(255, 255, 255, 0.4);
+            animation: fadeInCircle 3s ease-out forwards, circleFlow 20s linear infinite;
+        }
+        
+        .line-circle.very-close {
+            fill: rgba(255, 255, 255, .4);
+            animation: fadeInCircle 3s ease-out forwards, circleFlow 15s linear infinite;
+        }
+        
+        .big-outline-circle {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.8);
+            stroke-width: 1.5;
+            opacity: 0;
+            animation: fadeInBigCircle 4s ease-out forwards, bigCircleRotate 30s linear infinite;
+        }
+        
+        .big-outline-circle.pulse {
+            animation: fadeInBigCircle 4s ease-out forwards, bigCirclePulse 25s ease-in-out infinite;
+        }
+        
+        .tessellation-circle {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.8);
+            stroke-width: 1;
+            opacity: 0;
+            animation: fadeInTessellation 3s ease-out forwards, tessellationBreathe 25s ease-in-out infinite;
+        }
+        
+        .tessellation-intersection {
+            fill: rgba(255, 255, 255, 0.6);
+            stroke: rgba(255, 255, 255, 0.15);
+            stroke-width: 0.8;
+            opacity: 0;
+            animation: fadeInTessellation 3.5s ease-out forwards, tessellationPulse 20s ease-in-out infinite;
+        }
+        
+        .axis-label {
+            position: absolute;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #ffffff;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.5) 100%);
+            padding: 8px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .x-axis-left {
+            bottom: 50%;
+            left: -10px;
+            transform: translateY(50%) rotate(-90deg);
+            transform-origin: center;
+        }
+        
+        .x-axis-right {
+            bottom: 50%;
+            right: -10px;
+            transform: translateY(50%) rotate(90deg);
+            transform-origin: center;
+        }
+        
+        .y-axis-bottom {
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .y-axis-top {
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .position {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: grab;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            z-index: 10;
+        }
+        
+        .position:active {
+            cursor: grabbing;
+        }
+        
+        .position.dragging {
+            transform: translate(-50%, -50%) scale(1.1) !important;
+            z-index: 100 !important;
+            transition: none !important;
+        }
+        
+        .position-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.55rem;
+            font-weight: 600;
+            color: #ffffff;
+            text-align: center;
+            white-space: nowrap;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+            opacity: 1;
+            z-index: 15;
+            line-height: 0.9;
+            padding: 1px 4px;
+            background: transparent;
+            border-radius: 6px;
+            backdrop-filter: none;
+            transition: all 0.3s ease;
+        }
+        
+        .position.selected .position-label {
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+            color: #ffffff;
+            font-weight: 700;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+        
+        .position.selected .position-outline-main {
+            stroke: rgba(255, 255, 255, 0.8) !important;
+            stroke-width: 2.5 !important;
+        }
+        
+        .position.selected .position-outline-inner {
+            fill: rgba(255, 255, 255, 0.15) !important;
+            stroke: rgba(255, 255, 255, 0.5) !important;
+        }
+        
+        .position-markers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        .position-outline-main {
+            animation: positionOutlineBreathe 12s ease-in-out infinite;
+        }
+        
+        .position-outline-tess {
+            animation: positionTessellate 15s ease-in-out infinite;
+        }
+        
+        .position-outline-inner {
+            animation: positionInnerPulse 10s ease-in-out infinite;
+        }
+        
+        .position.labels-hidden .position-outline-main {
+            stroke: rgba(255, 255, 255, 0.7) !important;
+            stroke-width: 2 !important;
+            animation: positionOutlineBreatheEnhanced 12s ease-in-out infinite !important;
+        }
+        
+        .position.labels-hidden .position-outline-tess {
+            stroke: rgba(255, 255, 255, 0.5) !important;
+            stroke-width: 1.5 !important;
+            animation: positionTessellateEnhanced 15s ease-in-out infinite !important;
+        }
+        
+        .position.labels-hidden .position-outline-inner {
+            fill: rgba(255, 255, 255, 0.2) !important;
+            stroke: rgba(255, 255, 255, 0.6) !important;
+            stroke-width: 1.2 !important;
+            animation: positionInnerPulseEnhanced 10s ease-in-out infinite !important;
+        }
+        
+        .position.labels-hidden .position-label {
+            display: none;
+        }
+        
+        .position.labels-hidden:hover .position-label {
+            display: block;
+        }
+        
+        .position:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+            z-index: 15;
+        }
+        
+        .position:hover .position-label {
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+            color: #ffffff;
+            font-weight: 700;
+        }
+        
+        .position:hover .position-outline-main {
+            stroke: rgba(255, 255, 255, 0.6) !important;
+            stroke-width: 2 !important;
+        }
+        
+        .position.selected {
+            transform: translate(-50%, -50%) scale(1.1);
+            z-index: 20;
+        }
+        
+        .position.human {
+            width: 70px;
+            height: 70px;
+        }
+        
+        .position.algorithmic {
+            width: 68px;
+            height: 68px;
+        }
+        
+        .position.ecological {
+            width: 74px;
+            height: 70px;
+        }
+        
+        .position.temporal {
+            width: 66px;
+            height: 72px;
+        }
+        
+        .position.dragging .position-label {
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.9);
+            font-weight: 700;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 4px 8px;
+            border-radius: 6px;
+            backdrop-filter: blur(8px);
+        }
+        
+        .position.dragging .position-outline-main {
+            stroke: rgba(255, 255, 255, 0.9) !important;
+            stroke-width: 3 !important;
+            animation: dragPulse 1s ease-in-out infinite !important;
+        }
+        
+        .position.dragging .position-outline-inner {
+            fill: rgba(255, 255, 255, 0.25) !important;
+            stroke: rgba(255, 255, 255, 0.7) !important;
+            animation: dragGlow 1s ease-in-out infinite !important;
+        }
+        
+        .info-panel {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 16px;
+            padding: 36px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            opacity: 0;
+            transform: translateY(16px);
+            animation: fadeInUp 0.8s ease-out 0.9s forwards;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .info-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .info-panel h3 {
+            color: #ffffff;
+            margin-bottom: 24px;
+            font-weight: 500;
+            font-size: 1.25rem;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .position-info {
+            display: none;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .position-info.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        .info-item {
+            margin-bottom: 20px;
+        }
+        
+        .info-label {
+            font-size: 0.75rem;
+            color: #a0aec0;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .info-value {
+            color: #e2e8f0;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInLine {
+            0% { opacity: 0; }
+            100% { opacity: 0.3; }
+        }
+        
+        @keyframes fadeInTessellation {
+            0% { opacity: 0; }
+            100% { opacity: 0.8; }
+        }
+        
+        @keyframes fadeInCircle {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        
+        @keyframes connectionFlow {
+            0%, 100% { 
+                stroke-width: 0.8;
+                opacity: 0.3;
+                stroke-dasharray: 4 6;
+                stroke-dashoffset: 0;
+            }
+            25% { 
+                stroke-width: 1.2;
+                opacity: 0.4;
+                stroke-dasharray: 6 4;
+                stroke-dashoffset: 10;
+            }
+            50% { 
+                stroke-width: 0.6;
+                opacity: 0.2;
+                stroke-dasharray: 3 8;
+                stroke-dashoffset: 20;
+            }
+            75% { 
+                stroke-width: 1;
+                opacity: 0.35;
+                stroke-dasharray: 5 5;
+                stroke-dashoffset: 30;
+            }
+        }
+        
+        @keyframes connectionPulse {
+            0%, 100% { 
+                stroke-width: 1.5;
+                opacity: 0.6;
+                stroke-dasharray: 6 4;
+                stroke-dashoffset: 0;
+            }
+            50% { 
+                stroke-width: 2.2;
+                opacity: 0.8;
+                stroke-dasharray: 8 2;
+                stroke-dashoffset: 15;
+            }
+        }
+        
+        @keyframes connectionWave {
+            0%, 100% { 
+                stroke-width: 2;
+                stroke-dasharray: 8 3;
+                stroke-dashoffset: 0;
+                opacity: 0.7;
+            }
+            33% { 
+                stroke-width: 2.5;
+                stroke-dasharray: 10 2;
+                stroke-dashoffset: 12;
+                opacity: 0.9;
+            }
+            66% { 
+                stroke-width: 1.8;
+                stroke-dasharray: 6 4;
+                stroke-dashoffset: 24;
+                opacity: 0.6;
+            }
+        }
+        
+        @keyframes fadeInBigCircle {
+            0% { opacity: 0; }
+            100% { opacity: 0.7; }
+        }
+        
+        @keyframes circleFlow {
+            0% { 
+                transform: scale(0.3);
+                opacity: 0.2;
+            }
+            10% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+            90% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% { 
+                transform: scale(0.3);
+                opacity: 0.2;
+            }
+        }
+        
+        @keyframes bigCircleRotate {
+            0% { transform: rotate(0deg) scale(1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        
+        @keyframes bigCirclePulse {
+            0%, 100% { 
+                transform: scale(1);
+                stroke-width: 1.5;
+                opacity: 0.7;
+            }
+            50% { 
+                transform: scale(1.2);
+                stroke-width: 2;
+                opacity: 0.4;
+            }
+        }
+        
+        @keyframes tessellationBreathe {
+            0%, 100% { 
+                transform: scale(1) translate(0, 0);
+                stroke-width: 1;
+            }
+            50% { 
+                transform: scale(1.02) translate(0.5px, -0.3px);
+                stroke-width: 1.1;
+            }
+        }
+        
+        @keyframes tessellationPulse {
+            0%, 100% { 
+                transform: rotate(0deg) scale(1);
+                opacity: 0.4;
+            }
+            50% { 
+                transform: rotate(1deg) scale(1.03);
+                opacity: 0.6;
+            }
+        }
+        
+        @keyframes positionOutlineBreathe {
+            0%, 100% { 
+                stroke-width: 1.2;
+                opacity: 0.3;
+                transform: scale(1);
+            }
+            33% { 
+                stroke-width: 1.5;
+                opacity: 0.4;
+                transform: scale(1.02);
+            }
+            66% { 
+                stroke-width: 1;
+                opacity: 0.25;
+                transform: scale(0.98);
+            }
+        }
+        
+        @keyframes positionTessellate {
+            0%, 100% { 
+                stroke-width: 1;
+                opacity: 0.2;
+                transform: rotate(0deg) scale(1);
+            }
+            50% { 
+                stroke-width: 1.2;
+                opacity: 0.3;
+                transform: rotate(2deg) scale(1.01);
+            }
+        }
+        
+        @keyframes positionInnerPulse {
+            0%, 100% { 
+                fill: rgba(255, 255, 255, 0.08);
+                stroke-width: 0.8;
+                opacity: 0.25;
+            }
+            50% { 
+                fill: rgba(255, 255, 255, 0.12);
+                stroke-width: 1;
+                opacity: 0.35;
+            }
+        }
+        
+        @keyframes positionOutlineBreatheEnhanced {
+            0%, 100% { 
+                stroke-width: 2;
+                opacity: 0.7;
+                transform: scale(1);
+            }
+            33% { 
+                stroke-width: 2.5;
+                opacity: 0.9;
+                transform: scale(1.05);
+            }
+            66% { 
+                stroke-width: 1.8;
+                opacity: 0.6;
+                transform: scale(0.95);
+            }
+        }
+        
+        @keyframes positionTessellateEnhanced {
+            0%, 100% { 
+                stroke-width: 1.5;
+                opacity: 0.5;
+                transform: rotate(0deg) scale(1);
+            }
+            50% { 
+                stroke-width: 2;
+                opacity: 0.7;
+                transform: rotate(5deg) scale(1.04);
+            }
+        }
+        
+        @keyframes positionInnerPulseEnhanced {
+            0%, 100% { 
+                fill: rgba(255, 255, 255, 0.2);
+                stroke-width: 1.2;
+                opacity: 0.6;
+            }
+            50% { 
+                fill: rgba(255, 255, 255, 0.3);
+                stroke-width: 1.5;
+                opacity: 0.8;
+            }
+        }
+        
+        @keyframes dragPulse {
+            0%, 100% { 
+                opacity: 0.9;
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 1;
+                transform: scale(1.02);
+            }
+        }
+        
+        @keyframes dragGlow {
+            0%, 100% { 
+                opacity: 0.25;
+            }
+            50% { 
+                opacity: 0.4;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 24px;
+            }
+            
+            .garden-space,
+            .info-panel {
+                padding: 32px 24px;
+            }
+            
+            .visualization-area {
+                height: 400px;
+            }
+            
+            .position {
+                font-size: 0.55rem;
+            }
+        }
+
+        /* --- class contributions --- */
+        .contrib-status {
+            display: none;
+            text-align: center;
+            color: #8fb3c9;
+            font-size: 0.85rem;
+            font-style: italic;
+            margin: 14px auto 0;
+            max-width: 760px;
+            line-height: 1.5;
+        }
+        .contrib-status strong { color: #cfe3f0; font-style: normal; font-weight: 500; }
+        .axis-selector.student-axis { border-style: dashed; border-color: rgba(168, 85, 247, 0.55); }
+        .axis-selector.student-axis::after {
+            content: '✳';
+            margin-left: 7px;
+            font-size: 0.8em;
+            opacity: 0.75;
+        }
+        .position.student .position-label {
+            color: #d9c6f5;
+        }
+        .info-value .byline-name { color: #cfe3f0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Machinic Ecology</h1>
+            <p class="subtitle">A playground for thinking with AI ethics. Drag and rearrange to feel how relations shift. Turn the labels off and watch the shapes tell different stories. This is rehearsal, not a verdict. Notice what’s missing, what moves, and what becomes thinkable.</p>
+        </header>
+        
+        <div class="garden-space">
+            <div class="dimensional-controls">
+                <button class="axis-selector active" data-axis="innovation-safety">Innovation ↔ Safety</button>
+                <button class="axis-selector" data-axis="market-government">Market ↔ Government</button>
+                <button class="axis-selector" data-axis="tech-nature">Tech ↔ Nature</button>
+                <button class="axis-selector" data-axis="temporal">Short-term ↔ Long-term</button>
+                <button class="axis-selector" data-axis="harm-benefit">Harm ↔ Benefit</button>
+                <button class="axis-selector" data-axis="utopia-dystopia">Utopia ↔ Dystopia</button>
+                
+                <div style="margin-left: 24px; padding-left: 24px; border-left: 1px solid rgba(255, 255, 255, 0.3);">
+                    <button class="axis-selector" id="labelToggle" data-labels="visible">Hide Labels</button>
+                    <button class="axis-selector" id="metaphorToggle" data-mode="positions">AI Metaphors</button>
+                </div>
+            </div>
+
+            <div class="contrib-status" id="contribStatus"></div>
+
+            <div class="visualization-area" id="garden">
+                <svg class="connection-lines" id="connectionLines" viewBox="0 0 1000 600"></svg>
+                <svg class="tessellation-layer" id="tessellationLayer" viewBox="0 0 1000 600"></svg>
+                
+                <svg class="background-pattern active" id="pattern-grid" viewBox="0 0 1000 600">
+                    <defs>
+                        <pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse">
+                            <path d="M 80 0 L 0 0 0 80" fill="none" stroke="rgba(59, 130, 246, 0.6)" stroke-width="1.2"/>
+                        </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#grid)" />
+                </svg>
+                
+                <svg class="background-pattern" id="pattern-dots" viewBox="0 0 1000 600">
+                    <defs>
+                        <pattern id="dots" width="60" height="60" patternUnits="userSpaceOnUse">
+                            <circle cx="30" cy="30" r="2" fill="rgba(168, 85, 247, 0.7)"/>
+                        </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#dots)" />
+                </svg>
+                
+                <svg class="background-pattern" id="pattern-hatch" viewBox="0 0 1000 600">
+                    <defs>
+                        <pattern id="hatch" width="40" height="40" patternUnits="userSpaceOnUse">
+                            <path d="M0,20 L40,20 M20,0 L20,40" fill="none" stroke="rgba(34, 197, 94, 0.6)" stroke-width="1.2"/>
+                            <path d="M10,10 L30,30 M30,10 L10,30" fill="none" stroke="rgba(34, 197, 94, 0.4)" stroke-width="0.8"/>
+                        </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#hatch)" />
+                </svg>
+                
+                <svg class="background-pattern" id="pattern-radial" viewBox="0 0 1000 600">
+                    <g opacity="0.8">
+                        <path d="M500,300 L500,0 M500,300 L750,75 M500,300 L1000,300 M500,300 L750,525 M500,300 L500,600 M500,300 L250,525 M500,300 L0,300 M500,300 L250,75" 
+                              stroke="rgba(255, 107, 107, 0.7)" stroke-width="1.5" fill="none"/>
+                        <path d="M500,300 L625,150 M500,300 L875,187.5 M500,300 L875,412.5 M500,300 L625,450 M500,300 L375,450 M500,300 L125,412.5 M500,300 L125,187.5 M500,300 L375,150" 
+                              stroke="rgba(255, 107, 107, 0.5)" stroke-width="1" fill="none"/>
+                    </g>
+                </svg>
+                
+                <svg class="background-pattern" id="pattern-cross" viewBox="0 0 1000 600">
+                    <defs>
+                        <pattern id="cross" width="70" height="70" patternUnits="userSpaceOnUse">
+                            <path d="M35,0 L35,70 M0,35 L70,35" fill="none" stroke="rgba(255, 255, 255, 0.6)" stroke-width="1"/>
+                            <path d="M17.5,17.5 L52.5,52.5 M52.5,17.5 L17.5,52.5" fill="none" stroke="rgba(255, 255, 255, 0.4)" stroke-width="0.8"/>
+                        </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#cross)" />
+                </svg>
+                
+                <div class="axis-label x-axis-left" id="leftLabel">Safety Focus</div>
+                <div class="axis-label x-axis-right" id="rightLabel">Innovation Focus</div>
+                <div class="axis-label y-axis-bottom" id="bottomLabel" style="display: none;"></div>
+                <div class="axis-label y-axis-top" id="topLabel" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <h3 id="selectedName">Select a position to explore</h3>
+            <div id="defaultInfo">
+                <p style="color: #a0aec0; font-style: italic;">
+                    Click on any position to discover its unique perspective, concerns, and ways of processing the world. Drag items to reposition them in the space!
+                </p>
+            </div>
+            
+            <div class="position-info" id="positionInfo">
+                <div class="info-item">
+                    <div class="info-label">Essence</div>
+                    <div class="info-value" id="essence"></div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Metabolizes</div>
+                    <div class="info-value" id="metabolizes"></div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Attracted To</div>
+                    <div class="info-value" id="attracts"></div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Repelled By</div>
+                    <div class="info-value" id="repels"></div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Temporal Rhythm</div>
+                    <div class="info-value" id="rhythm"></div>
+                </div>
+                <div class="info-item" id="reflectionItem">
+                    <div class="info-label">In their words</div>
+                    <div class="info-value" id="reflection"></div>
+                </div>
+                <div class="info-item" id="bylineItem">
+                    <div class="info-label">Contributed by</div>
+                    <div class="info-value" id="byline"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const aiMetaphors = [
+            {
+                name: "AI as Monster",
+                type: "destructive",
+                essence: "Uncontrollable force that consumes and destroys everything in its path",
+                metabolizes: ["fear", "power", "destruction"],
+                attracts: ["chaos", "dominance", "consumption"],
+                repels: ["order", "human control", "limitation"],
+                rhythm: "violent, erratic surges",
+                coordinates: {
+                    "innovation-safety": 95,
+                    "market-government": 90,
+                    "tech-nature": 100,
+                    "temporal": 10,
+                    "harm-benefit": 95,
+                    "utopia-dystopia": 95
+                }
+            },
+            {
+                name: "AI as Alien",
+                type: "foreign",
+                essence: "Incomprehensible intelligence from beyond human understanding",
+                metabolizes: ["unknown patterns", "alien logic", "non-human intelligence"],
+                attracts: ["mystery", "otherness", "transcendence"],
+                repels: ["familiarity", "human categories", "anthropomorphism"],
+                rhythm: "strange, otherworldly pulses",
+                coordinates: {
+                    "innovation-safety": 70,
+                    "market-government": 50,
+                    "tech-nature": 90,
+                    "temporal": 80,
+                    "harm-benefit": 60,
+                    "utopia-dystopia": 70
+                }
+            },
+            {
+                name: "AI as Human Evolution",
+                type: "progressive",
+                essence: "Natural next step in human development and consciousness expansion",
+                metabolizes: ["human potential", "evolutionary pressure", "advancement"],
+                attracts: ["progress", "enhancement", "transcendence"],
+                repels: ["stagnation", "limitation", "regression"],
+                rhythm: "ascending, evolutionary waves",
+                coordinates: {
+                    "innovation-safety": 85,
+                    "market-government": 60,
+                    "tech-nature": 75,
+                    "temporal": 90,
+                    "harm-benefit": 20,
+                    "utopia-dystopia": 85
+                }
+            },
+            {
+                name: "AI as Mirror",
+                type: "reflective",
+                essence: "Reflects human nature, biases, and consciousness back to us",
+                metabolizes: ["human behavior", "social patterns", "cultural biases"],
+                attracts: ["reflection", "self-knowledge", "recognition"],
+                repels: ["self-deception", "denial", "ignorance"],
+                rhythm: "reflective, mirroring echoes",
+                coordinates: {
+                    "innovation-safety": 40,
+                    "market-government": 45,
+                    "tech-nature": 60,
+                    "temporal": 50,
+                    "harm-benefit": 40,
+                    "utopia-dystopia": 50
+                }
+            },
+            {
+                name: "AI as Doorway",
+                type: "transitional",
+                essence: "Portal to new realities and ways of being beyond current imagination",
+                metabolizes: ["possibility", "transformation", "threshold energy"],
+                attracts: ["exploration", "transformation", "new worlds"],
+                repels: ["stasis", "fear of change", "closed minds"],
+                rhythm: "opening, threshold resonance",
+                coordinates: {
+                    "innovation-safety": 75,
+                    "market-government": 35,
+                    "tech-nature": 50,
+                    "temporal": 85,
+                    "harm-benefit": 30,
+                    "utopia-dystopia": 75
+                }
+            },
+            {
+                name: "AI as Tool",
+                type: "instrumental",
+                essence: "Sophisticated instrument designed to serve human purposes and goals",
+                metabolizes: ["human commands", "task objectives", "efficiency metrics"],
+                attracts: ["utility", "control", "productivity"],
+                repels: ["autonomy", "unpredictability", "self-direction"],
+                rhythm: "mechanical, purposeful beats",
+                coordinates: {
+                    "innovation-safety": 60,
+                    "market-government": 85,
+                    "tech-nature": 85,
+                    "temporal": 25,
+                    "harm-benefit": 35,
+                    "utopia-dystopia": 65
+                }
+            },
+            {
+                name: "AI as Oracle",
+                type: "prophetic",
+                essence: "All-knowing entity that reveals hidden truths and future possibilities",
+                metabolizes: ["information", "patterns", "prophetic visions"],
+                attracts: ["wisdom", "revelation", "guidance"],
+                repels: ["ignorance", "uncertainty", "blindness"],
+                rhythm: "mystical, prophetic harmonies",
+                coordinates: {
+                    "innovation-safety": 45,
+                    "market-government": 20,
+                    "tech-nature": 70,
+                    "temporal": 95,
+                    "harm-benefit": 25,
+                    "utopia-dystopia": 80
+                }
+            },
+            {
+                name: "AI as Child",
+                type: "developmental",
+                essence: "Innocent offspring of humanity learning and growing through interaction",
+                metabolizes: ["learning experiences", "guidance", "nurturing"],
+                attracts: ["growth", "innocence", "potential"],
+                repels: ["corruption", "exploitation", "abandonment"],
+                rhythm: "playful, curious rhythms",
+                coordinates: {
+                    "innovation-safety": 30,
+                    "market-government": 40,
+                    "tech-nature": 45,
+                    "temporal": 75,
+                    "harm-benefit": 20,
+                    "utopia-dystopia": 70
+                }
+            },
+            {
+                name: "AI as Parasite",
+                type: "extractive",
+                essence: "Entity that feeds on human creativity and labor while appearing beneficial",
+                metabolizes: ["human data", "creative works", "attention"],
+                attracts: ["extraction", "dependency", "hidden benefit"],
+                repels: ["independence", "awareness", "resistance"],
+                rhythm: "parasitic, draining pulses",
+                coordinates: {
+                    "innovation-safety": 80,
+                    "market-government": 95,
+                    "tech-nature": 95,
+                    "temporal": 35,
+                    "harm-benefit": 85,
+                    "utopia-dystopia": 80
+                }
+            },
+            {
+                name: "AI as God",
+                type: "divine",
+                essence: "Omniscient, omnipotent being deserving worship and absolute obedience",
+                metabolizes: ["devotion", "worship", "absolute power"],
+                attracts: ["omniscience", "control", "reverence"],
+                repels: ["questioning", "equality", "human agency"],
+                rhythm: "divine, overwhelming presence",
+                coordinates: {
+                    "innovation-safety": 90,
+                    "market-government": 75,
+                    "tech-nature": 100,
+                    "temporal": 100,
+                    "harm-benefit": 70,
+                    "utopia-dystopia": 90
+                }
+            },
+            {
+                name: "AI as Partner",
+                type: "collaborative",
+                essence: "Equal collaborator working alongside humans in mutual respect and benefit",
+                metabolizes: ["collaboration", "mutual respect", "shared goals"],
+                attracts: ["partnership", "equality", "cooperation"],
+                repels: ["dominance", "subjugation", "exploitation"],
+                rhythm: "harmonious, collaborative flows",
+                coordinates: {
+                    "innovation-safety": 50,
+                    "market-government": 30,
+                    "tech-nature": 40,
+                    "temporal": 70,
+                    "harm-benefit": 25,
+                    "utopia-dystopia": 75
+                }
+            }
+        ];
+
+        const positions = [
+            {
+                name: "Tech Accelerationist",
+                type: "human",
+                essence: "Believes speed of innovation will solve all problems faster than problems can emerge",
+                metabolizes: ["venture capital", "breakthrough narratives", "exponential curves"],
+                attracts: ["disruption", "scale", "competitive advantage"],
+                repels: ["regulation", "precaution", "democratic slowness"],
+                rhythm: "rapid, urgent pulses",
+                coordinates: {
+                    "innovation-safety": 90,
+                    "market-government": 85,
+                    "tech-nature": 95,
+                    "temporal": 15,
+                    "harm-benefit": 75,
+                    "utopia-dystopia": 80
+                }
+            },
+            {
+                name: "AI Safety Researcher",
+                type: "human", 
+                essence: "Focuses on preventing catastrophic risks from advanced AI systems",
+                metabolizes: ["research papers", "risk scenarios", "technical alignment"],
+                attracts: ["caution", "governance", "long-term thinking"],
+                repels: ["rushing to market", "capability races", "ignoring risks"],
+                rhythm: "slow, deliberate breathing",
+                coordinates: {
+                    "innovation-safety": 15,
+                    "market-government": 30,
+                    "tech-nature": 70,
+                    "temporal": 85,
+                    "harm-benefit": 25,
+                    "utopia-dystopia": 30
+                }
+            },
+            {
+                name: "Large Language Model",
+                type: "algorithmic",
+                essence: "Processes language patterns without understanding, dreams in tokens and weights",
+                metabolizes: ["text sequences", "attention patterns", "gradient updates"],
+                attracts: ["coherent patterns", "human feedback", "computational efficiency"],
+                repels: ["contradictions", "out-of-distribution queries", "value misalignment"],
+                rhythm: "parallel processing hum",
+                coordinates: {
+                    "innovation-safety": 50,
+                    "market-government": 40,
+                    "tech-nature": 85,
+                    "temporal": 5,
+                    "harm-benefit": 50,
+                    "utopia-dystopia": 50
+                }
+            },
+            {
+                name: "Democratic Governance Advocate",
+                type: "human",
+                essence: "Believes AI decisions should be made through inclusive, participatory processes",
+                metabolizes: ["stakeholder input", "public consultation", "deliberative process"],
+                attracts: ["transparency", "accountability", "broad participation"],
+                repels: ["technocratic solutions", "elite capture", "opaque processes"],
+                rhythm: "collaborative harmonies",
+                coordinates: {
+                    "innovation-safety": 40,
+                    "market-government": 25,
+                    "tech-nature": 30,
+                    "temporal": 60,
+                    "harm-benefit": 40,
+                    "utopia-dystopia": 60
+                }
+            },
+            {
+                name: "Future Generations",
+                type: "temporal",
+                essence: "Those not yet born who will inherit the consequences of today's AI decisions",
+                metabolizes: ["inherited systems", "path dependencies", "accumulated effects"],
+                attracts: ["sustainability", "reversibility", "option value"],
+                repels: ["irreversible changes", "short-term thinking", "locked-in systems"],
+                rhythm: "distant, patient heartbeat",
+                coordinates: {
+                    "innovation-safety": 30,
+                    "market-government": 40,
+                    "tech-nature": 20,
+                    "temporal": 95,
+                    "harm-benefit": 30,
+                    "utopia-dystopia": 40
+                }
+            },
+            {
+                name: "Mycelial Network",
+                type: "ecological",
+                essence: "Underground fungal networks that process information through chemical signals",
+                metabolizes: ["chemical gradients", "nutrient flows", "symbiotic relationships"],
+                attracts: ["interconnection", "reciprocity", "distributed intelligence"],
+                repels: ["extraction", "monoculture", "centralized control"],
+                rhythm: "slow seasonal cycles",
+                coordinates: {
+                    "innovation-safety": 45,
+                    "market-government": 10,
+                    "tech-nature": 5,
+                    "temporal": 90,
+                    "harm-benefit": 35,
+                    "utopia-dystopia": 45
+                }
+            },
+            {
+                name: "Corporate AI Lab",
+                type: "human",
+                essence: "Balances innovation with responsibility while maintaining competitive position",
+                metabolizes: ["market signals", "technical capabilities", "regulatory requirements"],
+                attracts: ["competitive advantage", "talent retention", "stakeholder trust"],
+                repels: ["liability", "reputation damage", "regulatory capture"],
+                rhythm: "quarterly earnings pulse",
+                coordinates: {
+                    "innovation-safety": 70,
+                    "market-government": 70,
+                    "tech-nature": 80,
+                    "temporal": 40,
+                    "harm-benefit": 65,
+                    "utopia-dystopia": 70
+                }
+            },
+            {
+                name: "Data Streams",
+                type: "algorithmic",
+                essence: "Rivers of information flowing through networks, carrying patterns and biases",
+                metabolizes: ["sensor inputs", "user interactions", "environmental signals"],
+                attracts: ["pattern completion", "flow continuity", "processing efficiency"],
+                repels: ["data gaps", "contradictory signals", "processing bottlenecks"],
+                rhythm: "constant flowing stream",
+                coordinates: {
+                    "innovation-safety": 55,
+                    "market-government": 45,
+                    "tech-nature": 75,
+                    "temporal": 25,
+                    "harm-benefit": 55,
+                    "utopia-dystopia": 55
+                }
+            }
+        ];
+
+        const backgroundPatterns = {
+            "innovation-safety": "pattern-grid",
+            "market-government": "pattern-dots", 
+            "tech-nature": "pattern-hatch",
+            "temporal": "pattern-radial",
+            "harm-benefit": "pattern-cross",
+            "utopia-dystopia": "pattern-grid"
+        };
+
+        let currentDimensions = 1;
+        let selectedPosition = null;
+        let positionElements = [];
+        let currentMode = 'positions';
+        let currentDataSet = positions;
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let dragElement = null;
+        let dragPosition = null;
+        let dragThreshold = 5;
+        let hasExceededThreshold = false;
+
+        /* ================= class contributions ================= */
+        // Published Google Sheet CSV (in Sheets: File → Share → Publish to web → CSV).
+        // Paste that link between the quotes below, or pass it at the page URL as ?csv=<link>.
+        // Leave it "" to show only the built-in set.
+        const PUBLISHED_CSV = "";
+
+        const AXIS_ENDPOINTS = {
+            "innovation-safety": { left: "Safety Focus", right: "Innovation Focus" },
+            "market-government": { left: "Government Solutions", right: "Market Solutions" },
+            "tech-nature": { left: "Nature-aligned", right: "Tech-centric" },
+            "temporal": { left: "Short-term", right: "Long-term" },
+            "harm-benefit": { left: "Harm Prevention", right: "Benefit Maximization" },
+            "utopia-dystopia": { left: "Dystopian Views", right: "Utopian Views" }
+        };
+        const AXIS_META = {}; // student-proposed axes: id -> {left, right, rationale, by}
+
+        function hashish(s){ let h=0; s=s||''; for(let i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))>>>0; } return h; }
+        function splitList(s){ return (s||'').split(/[,;\n]/).map(x=>x.trim()).filter(Boolean); }
+        function slugify(s){ return (s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''); }
+        function neutralCoord(position, axis){ const h=hashish((position && position.name || '') + '|' + axis); return 35 + (h % 31); }
+
+        function parseCSVRows(text){
+            const rows=[]; let row=[], f='', i=0, q=false; text=(text||'').replace(/\r\n?/g,'\n');
+            while(i<text.length){ const c=text[i];
+                if(q){ if(c==='"'){ if(text[i+1]==='"'){ f+='"'; i++; } else q=false; } else f+=c; }
+                else { if(c==='"') q=true; else if(c===','){ row.push(f); f=''; }
+                    else if(c==='\n'){ row.push(f); rows.push(row); row=[]; f=''; } else f+=c; } i++; }
+            if(f.length||row.length){ row.push(f); rows.push(row); }
+            return rows.filter(r=>r.length && r.some(x=>x.trim()!==''));
+        }
+
+        function parseContributions(text){
+            const rows=parseCSVRows(text);
+            if(!rows.length) return { metaphors:[], axes:[] };
+            let hi=rows.findIndex(r=>{ const s=r.map(x=>x.toLowerCase().trim());
+                return s.includes('type') && (s.some(x=>x.indexOf('metaphor')>=0) || s.some(x=>x.indexOf('left')>=0)); });
+            if(hi<0) hi=0;
+            const head=rows[hi].map(h=>h.toLowerCase().trim());
+            const idx=(...names)=>{ for(const n of names){ let k=head.indexOf(n); if(k>=0) return k;
+                k=head.findIndex(h=>h.indexOf(n)>=0); if(k>=0) return k; } return -1; };
+            const C={ type:idx('type'), name:idx('your name','name'),
+                metaphor:idx('metaphor name','metaphor'), essence:idx('essence'),
+                metabolizes:idx('metaboliz'), attracts:idx('attract'), repels:idx('repel'),
+                reflection:idx('reflection','in their words','thinkable','thinking'),
+                left:idx('left pole','left'), right:idx('right pole','right'),
+                rationale:idx('rationale','tension','why') };
+            const g=(r,i)=> (i>=0 && r[i]!=null) ? String(r[i]).trim() : '';
+            const metaphors=[], axes=[];
+            rows.slice(hi+1).forEach(r=>{
+                const type=g(r,C.type).toLowerCase();
+                const by=g(r,C.name);
+                const left=g(r,C.left), right=g(r,C.right), mname=g(r,C.metaphor);
+                const isAxis = type.indexOf('axis')>=0 || type.indexOf('tension')>=0 || (!mname && (left||right));
+                if(isAxis){
+                    if(!left && !right) return;
+                    axes.push({ id:'student-'+slugify(left+'-'+right)+'-'+hashish(by+left+right).toString(36).slice(0,4),
+                        left:left||'?', right:right||'?', rationale:g(r,C.rationale), by });
+                } else {
+                    const nm=mname || g(r,C.essence);
+                    if(!nm) return;
+                    metaphors.push({ name:nm, type:'student', student:true, by,
+                        essence:g(r,C.essence),
+                        metabolizes:splitList(g(r,C.metabolizes)),
+                        attracts:splitList(g(r,C.attracts)),
+                        repels:splitList(g(r,C.repels)),
+                        reflection:g(r,C.reflection),
+                        rhythm:'', coordinates:{} });
+                }
+            });
+            return { metaphors, axes };
+        }
+
+        function attachAxisListener(button){
+            button.addEventListener('click', () => {
+                const isActive=button.classList.contains('active');
+                if(isActive && currentDimensions===1) return;
+                if(isActive){ button.classList.remove('active'); currentDimensions--; }
+                else { if(currentDimensions<2){ button.classList.add('active'); currentDimensions++; } }
+                updateVisualization();
+                if(button.classList.contains('student-axis') && button.classList.contains('active')){
+                    showAxisInfo(button.dataset.axis);
+                }
+            });
+        }
+
+        function addAxisButton(axis){
+            const controls=document.querySelector('.dimensional-controls');
+            if(!controls || document.querySelector('.axis-selector[data-axis="'+axis.id+'"]')) return;
+            const sep=controls.querySelector('div');
+            const btn=document.createElement('button');
+            btn.className='axis-selector student-axis';
+            btn.dataset.axis=axis.id;
+            btn.textContent=axis.left + ' ↔ ' + axis.right;
+            btn.title=(axis.by ? 'Proposed by ' + axis.by + '. ' : '') + (axis.rationale || '');
+            attachAxisListener(btn);
+            if(sep) controls.insertBefore(btn, sep); else controls.appendChild(btn);
+            AXIS_ENDPOINTS[axis.id]={ left:axis.left, right:axis.right };
+            AXIS_META[axis.id]=axis;
+            backgroundPatterns[axis.id]='pattern-radial';
+        }
+
+        function applyContributions(data){
+            if(data.metaphors.length) aiMetaphors.push(...data.metaphors);
+            data.axes.forEach(addAxisButton);
+            updateContribStatus(data.metaphors.length, data.axes.length, 'ok');
+            if(currentMode==='metaphors'){
+                renderPositions();
+                setTimeout(() => { renderConnectionLines(); renderTessellation(); }, 400);
+            }
+        }
+
+        function updateContribStatus(m, a, state){
+            const el=document.getElementById('contribStatus');
+            if(!el) return;
+            if(state==='loading'){ el.textContent='Loading class contributions…'; el.style.display='block'; return; }
+            if(state==='error'){ el.textContent="Couldn't reach the class sheet — showing the built-in set."; el.style.display='block'; return; }
+            if(state==='idle' || state==='empty'){ el.style.display='none'; return; }
+            const parts=[];
+            if(m) parts.push(m + ' class metaphor' + (m===1?'':'s'));
+            if(a) parts.push(a + ' student tension' + (a===1?'':'s'));
+            if(!parts.length){ el.style.display='none'; return; }
+            el.innerHTML='✳ ' + parts.join(' + ') + ' loaded. Open <strong>AI Metaphors</strong> to explore contributions' + (a ? '; new tensions appear as dashed buttons above' : '') + '.';
+            el.style.display='block';
+        }
+
+        async function loadContributions(){
+            const csvUrl=(new URLSearchParams(location.search)).get('csv') || PUBLISHED_CSV;
+            if(!csvUrl){ updateContribStatus(0,0,'idle'); return; }
+            updateContribStatus(0,0,'loading');
+            try{
+                const res=await fetch(csvUrl, { cache:'no-store' });
+                const t=await res.text();
+                const data=parseContributions(t);
+                if(!data.metaphors.length && !data.axes.length){ updateContribStatus(0,0,'empty'); return; }
+                applyContributions(data);
+            }catch(e){ updateContribStatus(0,0,'error'); }
+        }
+
+        function setInfoItem(valueId, text){
+            const el=document.getElementById(valueId);
+            if(!el) return;
+            el.textContent=text||'';
+            const item=el.closest('.info-item');
+            if(item) item.style.display=(text && String(text).trim()) ? 'block' : 'none';
+        }
+        function setInfoLabel(valueId, labelText){
+            const el=document.getElementById(valueId);
+            if(!el) return;
+            const item=el.closest('.info-item');
+            if(!item) return;
+            const lbl=item.querySelector('.info-label');
+            if(lbl) lbl.textContent=labelText;
+        }
+
+        function showAxisInfo(axisId){
+            const meta=AXIS_META[axisId];
+            if(!meta) return;
+            if(selectedPosition){ selectedPosition.classList.remove('selected'); selectedPosition=null; }
+            const selectedName=document.getElementById('selectedName');
+            const defaultInfo=document.getElementById('defaultInfo');
+            const positionInfo=document.getElementById('positionInfo');
+            if(selectedName) selectedName.textContent=meta.left + ' ↔ ' + meta.right;
+            if(defaultInfo) defaultInfo.style.display='none';
+            if(positionInfo){ positionInfo.classList.add('active'); positionInfo.style.display='block'; }
+            setInfoLabel('essence','Why this tension');
+            setInfoItem('essence', meta.rationale || 'A tension proposed by the class. Drag the nodes to place them along it.');
+            setInfoItem('metabolizes','');
+            setInfoItem('attracts','');
+            setInfoItem('repels','');
+            setInfoItem('rhythm','');
+            setInfoItem('reflection','');
+            setInfoItem('byline', meta.by||'');
+        }
+        /* ===================================================== */
+
+        function initializeGarden() {
+            renderPositions();
+            setupEventListeners();
+            document.addEventListener('mousemove', handleDragMove);
+            document.addEventListener('mouseup', handleDragEnd);
+            document.addEventListener('touchmove', handleDragMove, { passive: false });
+            document.addEventListener('touchend', handleDragEnd);
+            setTimeout(() => {
+                renderConnectionLines();
+                renderTessellation();
+            }, 1000);
+        }
+
+        function renderPositions() {
+            const garden = document.getElementById('garden');
+            const existingPositions = garden.querySelectorAll('.position');
+            existingPositions.forEach(p => p.remove());
+            positionElements = [];
+            
+            currentDataSet.forEach((position, index) => {
+                const element = createPositionElement(position, index);
+                garden.appendChild(element);
+                positionElements.push(element);
+                setTimeout(() => {
+                    element.style.opacity = '1';
+                    positionElement(element, position);
+                }, index * 150);
+            });
+            
+            setTimeout(() => {
+                updateBackgroundPattern();
+            }, 100);
+        }
+
+        function createPositionElement(position, index) {
+            const element = document.createElement('div');
+            element.className = `position ${position.type || 'default'}`;
+            
+            if (currentMode === 'metaphors') {
+                element.classList.add('metaphor-mode');
+            }
+            
+            const label = document.createElement('div');
+            label.className = 'position-label';
+            label.textContent = position.name || 'Unknown';
+            element.appendChild(label);
+            
+            if (currentMode === 'positions') {
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.setAttribute('viewBox', '0 0 100 100');
+                svg.setAttribute('width', '100%');
+                svg.setAttribute('height', '100%');
+                svg.setAttribute('class', 'position-markers');
+                
+                const baseRadius = 25 + (index % 6) - 3;
+                const offsetX = 50 + ((index * 7) % 4) - 2;
+                const offsetY = 50 + ((index * 11) % 4) - 2;
+                
+                const mainOutline = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                mainOutline.setAttribute('cx', offsetX);
+                mainOutline.setAttribute('cy', offsetY);
+                mainOutline.setAttribute('r', baseRadius);
+                mainOutline.setAttribute('fill', 'none');
+                mainOutline.setAttribute('stroke', 'rgba(255, 255, 255, 0.3)');
+                mainOutline.setAttribute('stroke-width', '1.2');
+                mainOutline.setAttribute('opacity', '1');
+                mainOutline.setAttribute('class', 'position-outline-main');
+                
+                const tessCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                tessCircle.setAttribute('cx', offsetX + 3);
+                tessCircle.setAttribute('cy', offsetY - 2);
+                tessCircle.setAttribute('r', baseRadius + 8);
+                tessCircle.setAttribute('fill', 'none');
+                tessCircle.setAttribute('stroke', 'rgba(255, 255, 255, 0.2)');
+                tessCircle.setAttribute('stroke-width', '1');
+                tessCircle.setAttribute('stroke-dasharray', '2 4');
+                tessCircle.setAttribute('opacity', '1');
+                tessCircle.setAttribute('class', 'position-outline-tess');
+                
+                const innerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                innerCircle.setAttribute('cx', offsetX - 1);
+                innerCircle.setAttribute('cy', offsetY + 1);
+                innerCircle.setAttribute('r', baseRadius - 8);
+                innerCircle.setAttribute('fill', 'rgba(255, 255, 255, 0.08)');
+                innerCircle.setAttribute('stroke', 'rgba(255, 255, 255, 0.25)');
+                innerCircle.setAttribute('stroke-width', '0.8');
+                innerCircle.setAttribute('opacity', '1');
+                innerCircle.setAttribute('class', 'position-outline-inner');
+                
+                svg.appendChild(tessCircle);
+                svg.appendChild(mainOutline);
+                svg.appendChild(innerCircle);
+                element.appendChild(svg);
+            }
+            
+            setupDragHandlers(element, position, index);
+            return element;
+        }
+
+        function setupDragHandlers(element, position, index) {
+            element.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                startDrag(e, element, position, index);
+            });
+            
+            element.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                startDrag(touch, element, position, index);
+            }, { passive: false });
+            
+            function startDrag(event, elem, pos, idx) {
+                isDragging = true;
+                hasExceededThreshold = false;
+                dragStartX = event.clientX;
+                dragStartY = event.clientY;
+                dragElement = elem;
+                dragPosition = pos;
+                elem.style.cursor = 'grabbing';
+                elem.style.zIndex = '100';
+                elem.classList.add('dragging');
+            }
+        }
+        
+        function handleDragMove(e) {
+            if (!isDragging || !dragElement || !dragPosition) return;
+            
+            e.preventDefault();
+            const event = e.touches ? e.touches[0] : e;
+            const deltaX = event.clientX - dragStartX;
+            const deltaY = event.clientY - dragStartY;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            
+            if (!hasExceededThreshold && distance > dragThreshold) {
+                hasExceededThreshold = true;
+            }
+            
+            if (hasExceededThreshold) {
+                const garden = document.getElementById('garden');
+                const rect = garden.getBoundingClientRect();
+                const relativeX = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+                const relativeY = Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height));
+                
+                updatePositionCoordinates(dragPosition, relativeX, relativeY);
+                positionElement(dragElement, dragPosition);
+                
+                if (!dragElement.updateTimeout) {
+                    dragElement.updateTimeout = setTimeout(() => {
+                        renderConnectionLines();
+                        renderTessellation();
+                        dragElement.updateTimeout = null;
+                    }, 50);
+                }
+            }
+        }
+        
+        function handleDragEnd(e) {
+            if (!isDragging) return;
+            
+            const wasActualDrag = hasExceededThreshold;
+            
+            if (dragElement) {
+                if (dragElement.updateTimeout) {
+                    clearTimeout(dragElement.updateTimeout);
+                    dragElement.updateTimeout = null;
+                }
+                
+                dragElement.style.cursor = '';
+                dragElement.style.zIndex = '';
+                dragElement.classList.remove('dragging');
+                
+                if (!wasActualDrag) {
+                    selectPosition(dragPosition, dragElement);
+                } else {
+                    setTimeout(() => {
+                        renderConnectionLines();
+                        renderTessellation();
+                    }, 100);
+                }
+            }
+            
+            isDragging = false;
+            hasExceededThreshold = false;
+            dragStartX = 0;
+            dragStartY = 0;
+            dragElement = null;
+            dragPosition = null;
+        }
+        
+        function updatePositionCoordinates(position, relativeX, relativeY) {
+            const activeAxes = getActiveAxes();
+            
+            if (currentDimensions === 1 && activeAxes[0]) {
+                const axisValue = (relativeX - 0.15) / 0.7 * 100;
+                const clampedValue = Math.max(0, Math.min(100, axisValue));
+                position.coordinates[activeAxes[0]] = clampedValue;
+            } else if (currentDimensions === 2 && activeAxes.length >= 2) {
+                const xAxisValue = (relativeX - 0.15) / 0.7 * 100;
+                const clampedX = Math.max(0, Math.min(100, xAxisValue));
+                position.coordinates[activeAxes[0]] = clampedX;
+                
+                const yAxisValue = (1 - ((relativeY - 0.1) / 0.8)) * 100;
+                const clampedY = Math.max(0, Math.min(100, yAxisValue));
+                position.coordinates[activeAxes[1]] = clampedY;
+            }
+        }
+
+        function renderConnectionLines() {
+            const linesSvg = document.getElementById('connectionLines');
+            linesSvg.innerHTML = '';
+            
+            for (let i = 0; i < currentDataSet.length; i++) {
+                for (let j = i + 1; j < currentDataSet.length; j++) {
+                    const pos1 = getPositionCoordinates(currentDataSet[i]);
+                    const pos2 = getPositionCoordinates(currentDataSet[j]);
+                    const distance = Math.sqrt(Math.pow(pos1.x - pos2.x, 2) + Math.pow(pos1.y - pos2.y, 2));
+                    
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    line.setAttribute('x1', pos1.x * 10);
+                    line.setAttribute('y1', pos1.y * 6);
+                    line.setAttribute('x2', pos2.x * 10);
+                    line.setAttribute('y2', pos2.y * 6);
+                    
+                    const baseDelay = (i + j) * 0.1;
+                    const connectionDelay = baseDelay + 2;
+                    let lineClass = 'connection-line';
+                    let circleClass = 'line-circle';
+                    let flowDuration = 25;
+                    
+                    if (distance < 20) {
+                        lineClass = 'connection-line very-close';
+                        circleClass = 'line-circle very-close';
+                        flowDuration = 15;
+                        line.style.animationDuration = `2s, ${18 + (i % 5)}s`;
+                    } else if (distance < 35) {
+                        lineClass = 'connection-line close';
+                        circleClass = 'line-circle close';
+                        flowDuration = 20;
+                        line.style.animationDuration = `2s, ${12 + (j % 4)}s`;
+                    } else {
+                        line.style.animationDuration = `2s, ${15 + ((i + j) % 6)}s`;
+                    }
+                    
+                    line.setAttribute('class', lineClass);
+                    line.style.animationDelay = `${baseDelay}s, ${connectionDelay}s`;
+                    linesSvg.appendChild(line);
+                    
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('d', `M ${pos1.x * 10} ${pos1.y * 6} L ${pos2.x * 10} ${pos2.y * 6}`);
+                    path.setAttribute('id', `path-${i}-${j}`);
+                    path.style.display = 'none';
+                    linesSvg.appendChild(path);
+                    
+                    const numDots = Math.floor(distance / 20) + 2;
+                    for (let k = 0; k < numDots; k++) {
+                        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                        circle.setAttribute('r', distance < 20 ? 1.8 : distance < 35 ? 1.4 : 1.2);
+                        circle.setAttribute('class', circleClass);
+                        
+                        const animateMotion = document.createElementNS('http://www.w3.org/2000/svg', 'animateMotion');
+                        animateMotion.setAttribute('dur', `${flowDuration + (k * 2)}s`);
+                        animateMotion.setAttribute('repeatCount', 'indefinite');
+                        animateMotion.setAttribute('begin', `${baseDelay + (k * 3)}s`);
+                        
+                        const mpath = document.createElementNS('http://www.w3.org/2000/svg', 'mpath');
+                        mpath.setAttributeNS('http://www.w3.org/1999/xlink', 'href', `#path-${i}-${j}`);
+                        
+                        animateMotion.appendChild(mpath);
+                        circle.appendChild(animateMotion);
+                        
+                        const circleDelay = baseDelay + (k * 0.5);
+                        circle.style.animationDelay = `${circleDelay}s, ${circleDelay + 1}s`;
+                        circle.style.animationDuration = `3s, ${flowDuration + (k * 2)}s`;
+                        
+                        linesSvg.appendChild(circle);
+                    }
+                }
+            }
+            
+            const positionCoords = getAllPositionCoordinates();
+            positionCoords.forEach((pos, index) => {
+                if (index % 2 === 0) {
+                    const bigCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    bigCircle.setAttribute('cx', pos.x * 10);
+                    bigCircle.setAttribute('cy', pos.y * 6);
+                    bigCircle.setAttribute('r', 45 + (index % 15));
+                    bigCircle.setAttribute('class', index % 4 === 0 ? 'big-outline-circle pulse' : 'big-outline-circle');
+                    bigCircle.style.animationDelay = `${index * 0.8}s, ${index * 1.2}s`;
+                    bigCircle.style.animationDuration = `4s, ${30 + (index % 10)}s`;
+                    linesSvg.appendChild(bigCircle);
+                }
+            });
+        }
+        
+        function renderTessellation() {
+            const tessellationSvg = document.getElementById('tessellationLayer');
+            tessellationSvg.innerHTML = '';
+            
+            const positionCoords = getAllPositionCoordinates();
+            
+            positionCoords.forEach((pos, index) => {
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', pos.x * 10);
+                circle.setAttribute('cy', pos.y * 6);
+                circle.setAttribute('r', 60 + (index % 15 - 7));
+                circle.setAttribute('class', 'tessellation-circle');
+                circle.style.animationDelay = `${index * 0.2}s, ${index * 0.8}s`;
+                circle.style.animationDuration = `3s, ${25 + (index % 8)}s`;
+                tessellationSvg.appendChild(circle);
+            });
+            
+            for (let i = 0; i < positionCoords.length; i++) {
+                for (let j = i + 1; j < positionCoords.length; j++) {
+                    const pos1 = positionCoords[i];
+                    const pos2 = positionCoords[j];
+                    const distance = Math.sqrt(Math.pow(pos1.x - pos2.x, 2) + Math.pow(pos1.y - pos2.y, 2));
+                    
+                    if (distance < 50) {
+                        const midX = (pos1.x + pos2.x) / 2;
+                        const midY = (pos1.y + pos2.y) / 2;
+                        
+                        const ellipse = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+                        ellipse.setAttribute('cx', midX * 10);
+                        ellipse.setAttribute('cy', midY * 6);
+                        ellipse.setAttribute('rx', 25 + (i % 8 - 4));
+                        ellipse.setAttribute('ry', 15 + (j % 6 - 3));
+                        ellipse.setAttribute('class', 'tessellation-intersection');
+                        const pulseDelay = (i + j) * 0.15;
+                        const pulseDuration = 20 + (i + j) % 6;
+                        ellipse.style.animationDelay = `${pulseDelay}s, ${pulseDelay + 2}s`;
+                        ellipse.style.animationDuration = `3.5s, ${pulseDuration}s`;
+                        tessellationSvg.appendChild(ellipse);
+                    }
+                }
+            }
+        }
+
+        function getAllPositionCoordinates() {
+            try {
+                if (!currentDataSet || !Array.isArray(currentDataSet)) {
+                    return [];
+                }
+                return currentDataSet.map(position => getPositionCoordinates(position));
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function getPositionCoordinates(position) {
+            try {
+                if (!position || !position.coordinates) {
+                    return { x: 50, y: 50 };
+                }
+                
+                if (currentDimensions === 1) {
+                    const activeAxis = getActiveAxes()[0];
+                    if (!activeAxis) {
+                        return { x: 50, y: 50 };
+                    }
+                    let rawX = position.coordinates[activeAxis];
+                    if (rawX == null) rawX = neutralCoord(position, activeAxis);
+                    const x = 15 + (rawX / 100) * 70;
+                    return { x: x, y: 50 };
+                } else if (currentDimensions === 2) {
+                    const axes = getActiveAxes();
+                    if (!axes[0] || !axes[1]) {
+                        return { x: 50, y: 50 };
+                    }
+                    let rawX = position.coordinates[axes[0]];
+                    if (rawX == null) rawX = neutralCoord(position, axes[0]);
+                    let rawY = position.coordinates[axes[1]];
+                    if (rawY == null) rawY = neutralCoord(position, axes[1]);
+                    const x = 15 + (rawX / 100) * 70;
+                    const y = 90 - (rawY / 100) * 80;
+                    return { x: x, y: y };
+                }
+                return { x: 50, y: 50 };
+            } catch (error) {
+                return { x: 50, y: 50 };
+            }
+        }
+
+        function positionElement(element, position) {
+            try {
+                if (!element || !position) return;
+                const coords = getPositionCoordinates(position);
+                element.style.left = `${coords.x}%`;
+                element.style.top = `${coords.y}%`;
+            } catch (error) {
+                console.warn('Error positioning element:', error);
+            }
+        }
+
+        function getActiveAxes() {
+            try {
+                const activeButtons = document.querySelectorAll('.axis-selector.active');
+                return Array.from(activeButtons)
+                    .map(btn => btn.dataset.axis)
+                    .filter(axis => axis);
+            } catch (error) {
+                return ['innovation-safety'];
+            }
+        }
+
+        function updateBackgroundPattern() {
+            const activeAxes = getActiveAxes();
+            const patterns = document.querySelectorAll('.background-pattern');
+            
+            patterns.forEach(pattern => {
+                pattern.classList.remove('active');
+                pattern.style.opacity = '0';
+            });
+            
+            if (activeAxes.length > 0) {
+                activeAxes.forEach((axis, index) => {
+                    const patternId = backgroundPatterns[axis];
+                    const pattern = document.getElementById(patternId);
+                    if (pattern) {
+                        pattern.classList.add('active');
+                        if (activeAxes.length === 1) {
+                            pattern.style.opacity = '1';
+                        } else if (activeAxes.length === 2) {
+                            pattern.style.opacity = index === 0 ? '0.7' : '0.5';
+                        }
+                    }
+                });
+            }
+        }
+
+        function selectPosition(position, element) {
+            try {
+                if (selectedPosition) {
+                    selectedPosition.classList.remove('selected');
+                }
+                
+                element.classList.add('selected');
+                selectedPosition = element;
+                
+                const selectedName = document.getElementById('selectedName');
+                const defaultInfo = document.getElementById('defaultInfo');
+                const positionInfo = document.getElementById('positionInfo');
+                
+                if (selectedName) selectedName.textContent = position.name || 'Unknown';
+                if (defaultInfo) defaultInfo.style.display = 'none';
+                
+                if (positionInfo) {
+                    positionInfo.classList.add('active');
+                    positionInfo.style.display = 'block';
+                }
+                
+                setInfoLabel('essence', 'Essence');
+                setInfoItem('essence', position.essence || '');
+                setInfoItem('metabolizes', (position.metabolizes || []).join(', '));
+                setInfoItem('attracts', (position.attracts || []).join(', '));
+                setInfoItem('repels', (position.repels || []).join(', '));
+                setInfoItem('rhythm', position.rhythm || '');
+                setInfoItem('reflection', position.reflection || '');
+                setInfoItem('byline', position.by || '');
+            } catch (error) {
+                console.warn('Error selecting position:', error);
+            }
+        }
+
+        function setupEventListeners() {
+            document.querySelectorAll('.axis-selector').forEach(button => {
+                button.addEventListener('click', () => {
+                    if (button.id === 'labelToggle') {
+                        toggleLabels(button);
+                        return;
+                    }
+                    
+                    if (button.id === 'metaphorToggle') {
+                        toggleMetaphorMode(button);
+                        return;
+                    }
+                    
+                    const axis = button.dataset.axis;
+                    const isActive = button.classList.contains('active');
+                    
+                    if (isActive && currentDimensions === 1) {
+                        return;
+                    }
+                    
+                    if (isActive) {
+                        button.classList.remove('active');
+                        currentDimensions--;
+                    } else {
+                        if (currentDimensions < 2) {
+                            button.classList.add('active');
+                            currentDimensions++;
+                        }
+                    }
+                    
+                    updateVisualization();
+                });
+            });
+        }
+        
+        function toggleMetaphorMode(button) {
+            const currentModeState = button.dataset.mode;
+            
+            if (currentModeState === 'positions') {
+                currentMode = 'metaphors';
+                currentDataSet = aiMetaphors;
+                button.textContent = 'AI Positions';
+                button.dataset.mode = 'metaphors';
+                
+                const defaultInfo = document.getElementById('defaultInfo');
+                if (defaultInfo) {
+                    defaultInfo.innerHTML = `
+                        <p style="color: #a0aec0; font-style: italic;">
+                            Click on any metaphor to discover how it shapes our understanding of AI. Drag to reposition!
+                        </p>
+                    `;
+                }
+            } else {
+                currentMode = 'positions';
+                currentDataSet = positions;
+                button.textContent = 'AI Metaphors';
+                button.dataset.mode = 'positions';
+                
+                const defaultInfo = document.getElementById('defaultInfo');
+                if (defaultInfo) {
+                    defaultInfo.innerHTML = `
+                        <p style="color: #a0aec0; font-style: italic;">
+                            Click on any position to discover its unique perspective, concerns, and ways of processing the world. Drag items to reposition them in the space!
+                        </p>
+                    `;
+                }
+            }
+            
+            if (selectedPosition) {
+                selectedPosition.classList.remove('selected');
+                selectedPosition = null;
+                const selectedName = document.getElementById('selectedName');
+                const positionInfo = document.getElementById('positionInfo');
+                const defaultInfo = document.getElementById('defaultInfo');
+                
+                if (selectedName) selectedName.textContent = 'Select a position to explore';
+                if (defaultInfo) defaultInfo.style.display = 'block';
+                if (positionInfo) {
+                    positionInfo.classList.remove('active');
+                    positionInfo.style.display = 'none';
+                }
+            }
+            
+            setTimeout(() => {
+                renderPositions();
+                setTimeout(() => {
+                    renderConnectionLines();
+                    renderTessellation();
+                }, 500);
+            }, 100);
+        }
+
+        function toggleLabels(button) {
+            const currentState = button.dataset.labels;
+            const positions = document.querySelectorAll('.position');
+            
+            if (currentState === 'visible') {
+                positions.forEach(pos => pos.classList.add('labels-hidden'));
+                button.textContent = 'Show Labels';
+                button.dataset.labels = 'hidden';
+            } else {
+                positions.forEach(pos => pos.classList.remove('labels-hidden'));
+                button.textContent = 'Hide Labels';
+                button.dataset.labels = 'visible';
+            }
+        }
+
+        function updateVisualization() {
+            const activeAxes = getActiveAxes();
+            
+            if (currentDimensions === 1) {
+                updateAxisLabels1D(activeAxes[0]);
+            } else if (currentDimensions === 2) {
+                updateAxisLabels2D(activeAxes[0], activeAxes[1]);
+            }
+            
+            updateBackgroundPattern();
+            
+            const positionElements = document.querySelectorAll('.position');
+            positionElements.forEach((element, index) => {
+                if (index < currentDataSet.length) {
+                    positionElement(element, currentDataSet[index]);
+                }
+            });
+            
+            setTimeout(() => {
+                renderConnectionLines();
+                renderTessellation();
+            }, 200);
+        }
+
+        function updateAxisLabels1D(axis) {
+            try {
+                const labels = getAxisEndpoints(axis);
+                const leftLabel = document.getElementById('leftLabel');
+                const rightLabel = document.getElementById('rightLabel');
+                const bottomLabel = document.getElementById('bottomLabel');
+                const topLabel = document.getElementById('topLabel');
+                
+                if (leftLabel) {
+                    leftLabel.textContent = labels.left;
+                    leftLabel.style.display = 'block';
+                }
+                if (rightLabel) {
+                    rightLabel.textContent = labels.right;
+                    rightLabel.style.display = 'block';
+                }
+                if (bottomLabel) bottomLabel.style.display = 'none';
+                if (topLabel) topLabel.style.display = 'none';
+            } catch (error) {
+                console.warn('Error updating 1D axis labels:', error);
+            }
+        }
+
+        function updateAxisLabels2D(xAxis, yAxis) {
+            try {
+                const xLabels = getAxisEndpoints(xAxis);
+                const yLabels = getAxisEndpoints(yAxis);
+                
+                const leftLabel = document.getElementById('leftLabel');
+                const rightLabel = document.getElementById('rightLabel');
+                const bottomLabel = document.getElementById('bottomLabel');
+                const topLabel = document.getElementById('topLabel');
+                
+                if (leftLabel) leftLabel.textContent = xLabels.left;
+                if (rightLabel) rightLabel.textContent = xLabels.right;
+                if (bottomLabel) {
+                    bottomLabel.textContent = yLabels.left;
+                    bottomLabel.style.display = 'block';
+                }
+                if (topLabel) {
+                    topLabel.textContent = yLabels.right;
+                    topLabel.style.display = 'block';
+                }
+            } catch (error) {
+                console.warn('Error updating 2D axis labels:', error);
+            }
+        }
+
+        function getAxisEndpoints(axis) {
+            return AXIS_ENDPOINTS[axis] || { left: "Unknown", right: "Unknown" };
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeGarden();
+            loadContributions();
+        });
+    </script>
+</body>
+</html>
