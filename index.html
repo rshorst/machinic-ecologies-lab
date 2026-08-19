@@ -264,7 +264,7 @@
         
         .axis-label {
             position: absolute;
-            font-size: 0.75rem;
+            font-size: calc(0.75rem * var(--label-scale, 1));
             font-weight: 500;
             color: #ffffff;
             background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.5) 100%);
@@ -334,7 +334,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 0.55rem;
+            font-size: calc(0.55rem * var(--label-scale, 1));
             font-weight: 600;
             color: #ffffff;
             text-align: center;
@@ -890,6 +890,82 @@
         .capture-name.needs { border-color: rgba(255,120,120,0.8); }
         .capture-msg { font-size: 0.8rem; color: #8be3b0; }
 
+        /* --- sandbox shape animation (borrows the node breathing logic) --- */
+        .ns-main { transform-box: fill-box; transform-origin: center; animation: nsBreathe 3.8s ease-in-out infinite; }
+        .ns-echo { transform-box: fill-box; transform-origin: center; animation: nsPulse 3.8s ease-in-out infinite; }
+        @keyframes nsBreathe { 0%, 100% { transform: scale(0.9); } 50% { transform: scale(1.16); } }
+        @keyframes nsPulse { 0% { transform: scale(0.9); opacity: 0.6; } 75% { transform: scale(1.7); opacity: 0; } 100% { transform: scale(1.7); opacity: 0; } }
+
+        /* --- footprint (where a metaphor has been placed) --- */
+        .fp-row { margin: 8px 0; }
+        .fp-poles { display: flex; justify-content: space-between; font-size: 0.68rem; color: #8fb3c9; margin-bottom: 3px; }
+        .fp-track { position: relative; height: 6px; background: rgba(255,255,255,0.08); border-radius: 4px; }
+        .fp-dot { position: absolute; top: 50%; width: 11px; height: 11px; border-radius: 50%;
+            background: #93c5fd; transform: translate(-50%, -50%); box-shadow: 0 0 8px rgba(147,197,253,0.6); }
+        .fp-empty { color: #8fb3c9; font-style: italic; }
+
+        /* --- text size control --- */
+        .text-size { display: inline-flex; gap: 4px; align-items: center; }
+
+        /* --- draw relation --- */
+        .axis-selector#linkToggle.on {
+            background: linear-gradient(135deg, rgba(45,212,191,0.32), rgba(59,130,246,0.28));
+            border-color: rgba(45,212,191,0.7);
+        }
+        .link-bar {
+            display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+            max-width: 1400px; margin: 14px auto 0; padding: 12px 18px;
+            background: rgba(45,212,191,0.10); border: 1px solid rgba(45,212,191,0.35); border-radius: 16px;
+        }
+        .link-prompt { font-size: 0.88rem; color: #b8ead9; }
+        .position.link-pick .position-label {
+            background: rgba(45,212,191,0.28); border: 1px solid rgba(45,212,191,0.8);
+            border-radius: 8px; color: #fff; padding: 3px 8px; box-shadow: 0 0 14px rgba(45,212,191,0.5);
+        }
+        .relation-label { fill: rgba(210,240,232,0.95); font-size: 12px; font-family: 'Inter', sans-serif; }
+        .relation-label-bg { fill: rgba(10,20,30,0.7); }
+
+        /* --- sandbox --- */
+        .axis-selector#sandboxToggle.on {
+            background: linear-gradient(135deg, rgba(168,85,247,0.35), rgba(236,72,153,0.3));
+            border-color: rgba(168,85,247,0.7);
+        }
+        .sandbox-bar {
+            display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+            max-width: 1400px; margin: 14px auto 0; padding: 12px 18px;
+            background: rgba(168,85,247,0.10); border: 1px solid rgba(168,85,247,0.35); border-radius: 16px;
+        }
+        .sandbox-tag { font-size: 0.85rem; color: #d9c6f5; }
+        .sandbox-msg { font-size: 0.8rem; color: #8be3b0; }
+        .sb-form { display: flex; align-items: center; gap: 8px; width: 100%; justify-content: center; margin-top: 4px; }
+        .sb-form input {
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.22);
+            border-radius: 12px; padding: 8px 12px; color: #e2e8f0; font-family: inherit; font-size: 0.82rem;
+        }
+        #sbTensionLeft, #sbTensionRight { width: 150px; }
+        #sbMetaName { width: 230px; } #sbMetaDef { width: 300px; }
+        .node-style {
+            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+            width: 100%; justify-content: center;
+            margin: 6px 0 0; padding: 10px 12px; background: rgba(168,85,247,0.10);
+            border: 1px solid rgba(168,85,247,0.3); border-radius: 12px;
+        }
+        .ns-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: #b9a7d6; }
+        .ns-swatches, .ns-shapes { display: flex; gap: 6px; }
+        .ns-swatch { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); cursor: pointer; }
+        .ns-swatch:hover { transform: scale(1.15); }
+        .ns-shape-btn {
+            width: 30px; height: 26px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 8px; color: #e2e8f0; cursor: pointer; font-size: 0.9rem; line-height: 1;
+        }
+        .ns-shape-btn:hover { border-color: rgba(168,85,247,0.7); }
+        .ns-sizes { display: flex; gap: 6px; }
+        .ns-size-btn {
+            width: 30px; height: 26px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 8px; color: #e2e8f0; cursor: pointer; font-size: 1.1rem; line-height: 1;
+        }
+        .ns-size-btn:hover { border-color: rgba(168,85,247,0.7); }
+
         /* --- guided explore --- */
         .explore-bar { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 18px; }
         .explore-label { font-size: 0.72rem; letter-spacing: 0.6px; text-transform: uppercase; color: #8fb3c9; }
@@ -931,16 +1007,16 @@
         .spread-dot { fill: rgba(147,197,253,0.9); }
 
         .opposition-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9; }
-        .opposition-halo { stroke: rgba(255,107,107,0.16); stroke-width: 4.5; }
-        .opposition-line { stroke: rgba(255,120,120,0.92); stroke-width: 1.4; stroke-dasharray: 7 5; animation: oppFlow 1.2s linear infinite; }
+        .opposition-halo { stroke: rgba(240,230,150,0.14); stroke-width: 4.5; }
+        .opposition-line { stroke: rgba(240,230,150,0.92); stroke-width: 1.4; stroke-dasharray: 7 5; animation: oppFlow 1.2s linear infinite; }
         @keyframes oppFlow { to { stroke-dashoffset: -24; } }
         .position.is-opposite .position-label {
-            background: rgba(255,107,107,0.22);
-            border: 1px solid rgba(255,120,120,0.75);
+            background: rgba(240,230,150,0.20);
+            border: 1px solid rgba(240,230,150,0.75);
             border-radius: 8px;
             color: #fff;
             padding: 3px 8px;
-            box-shadow: 0 0 16px rgba(255,107,107,0.5);
+            box-shadow: 0 0 16px rgba(240,230,150,0.45);
         }
     </style>
 </head>
@@ -948,7 +1024,7 @@
     <div class="container">
         <header>
             <h1>Machinic Ecology</h1>
-            <p class="subtitle">A space for thinking with the metaphors we use for AI. Choose two tensions for the axes and drag each metaphor to where you think it sits. Click one to read what it foregrounds and what it hides, and follow the red line to the metaphor it argues against. Notice what is missing, and what moves when you change the frame.</p>
+            <p class="subtitle">A space for thinking with the metaphors we use for AI. Choose two tensions for the axes and drag each metaphor to where you think it sits. Click one to read what it foregrounds and what it hides, and follow the pale line to the metaphor it argues against. Notice what is missing, and what moves when you change the frame.</p>
             <div class="explore-bar">
                 <span class="explore-label">Where to start</span>
                 <select class="axis-select" id="exploreSel"></select>
@@ -974,9 +1050,52 @@
                             <div class="mm-list" id="mmList"></div>
                         </div>
                     </div>
+                    <button class="axis-selector" id="linkToggle" data-on="false">Draw relation</button>
+                    <button class="axis-selector" id="sandboxToggle" data-on="false">Sandbox</button>
+                    <span class="text-size" title="Label text size"><button class="axis-mini" id="textMinus">A−</button><button class="axis-mini" id="textPlus">A+</button></span>
                 </div>
             </div>
             <div class="axis-readout" id="axisReadout"></div>
+
+            <div class="link-bar" id="linkBar" style="display: none;">
+                <span class="link-prompt" id="linkPrompt"></span>
+                <input class="capture-name" id="linkName" type="text" placeholder="name the relation (e.g. counters, extends, echoes)" style="display:none; width:280px;" />
+                <button class="axis-mini" id="linkSave" style="display:none;">Add relation</button>
+                <button class="axis-mini" id="linkCancel">Cancel</button>
+                <span class="capture-msg" id="linkMsg"></span>
+            </div>
+
+            <div class="sandbox-bar" id="sandboxBar" style="display: none;">
+                <span class="sandbox-tag">✎ Sandbox — your private space. Nothing here is saved to the class.</span>
+                <button class="axis-mini" id="sbAddTension">+ Tension</button>
+                <button class="axis-mini" id="sbAddMetaphor">+ Metaphor</button>
+                <button class="axis-mini" id="sbExport">Export image</button>
+                <button class="axis-mini" id="sbReset">Reset</button>
+                <span class="sandbox-msg" id="sandboxMsg"></span>
+                <div class="sb-form" id="sbTensionForm" style="display:none;">
+                    <input id="sbTensionLeft" type="text" placeholder="left pole" />
+                    <span>↔</span>
+                    <input id="sbTensionRight" type="text" placeholder="right pole" />
+                    <button class="axis-mini" id="sbTensionAdd">Add</button>
+                </div>
+                <div class="sb-form" id="sbMetaForm" style="display:none;">
+                    <input id="sbMetaName" type="text" placeholder="metaphor name (e.g. AI as River)" />
+                    <input id="sbMetaDef" type="text" placeholder="one-line definition (optional)" />
+                    <button class="axis-mini" id="sbMetaAdd">Add</button>
+                </div>
+                <div class="node-style" id="nodeStyle">
+                    <span class="ns-label" id="nsHint">Click a metaphor, then restyle it:</span>
+                    <span class="ns-label">Colour</span>
+                    <div class="ns-swatches" id="nsSwatches"></div>
+                    <span class="ns-label">Shape</span>
+                    <div class="ns-shapes" id="nsShapes"></div>
+                    <span class="ns-label">Size</span>
+                    <div class="ns-sizes" id="nsSizes">
+                        <button class="ns-size-btn" data-step="-1" title="Smaller">−</button>
+                        <button class="ns-size-btn" data-step="1" title="Bigger">+</button>
+                    </div>
+                </div>
+            </div>
 
             <div class="contrib-status" id="contribStatus"></div>
 
@@ -1073,12 +1192,20 @@
                     <div class="info-label">What it teaches</div>
                     <div class="info-value" id="teaches"></div>
                 </div>
+                <div class="info-item" id="sourceItem">
+                    <div class="info-label">Source</div>
+                    <div class="info-value" id="source" style="font-style: italic; color: #a9c4d6;"></div>
+                </div>
+                <div class="info-item" id="footprintItem">
+                    <div class="info-label">Where it has been placed</div>
+                    <div class="info-value" id="footprint"></div>
+                </div>
                 <div class="info-item" id="spreadItem">
                     <div class="info-label">Class placements</div>
                     <div class="info-value" id="spread"></div>
                 </div>
                 <div class="info-item" id="oppositeItem">
-                    <div class="info-label">In tension with</div>
+                    <div class="info-label">Relations</div>
                     <div class="info-value" id="opposite"></div>
                 </div>
                 <div class="info-item" id="bylineItem">
@@ -1092,164 +1219,13 @@
     <script>
         const aiMetaphors = [
             {
-                name: "AI as Monster",
-                type: "destructive",
-                definition: "A force imagined as beyond control, consuming whatever lies in its path.",
-                wants: "Scale without limit, and to keep growing.",
-                refuses: "Restraint, oversight, and the word no.",
-                teaches: "Fear can crowd out the slower work of governance. Ask who benefits when AI is framed as unstoppable.",
-                coordinates: {
-                    "innovation-safety": 95,
-                    "market-government": 90,
-                    "tech-nature": 100,
-                    "temporal": 10,
-                    "harm-benefit": 95,
-                    "utopia-dystopia": 95
-                }
-            },
-            {
-                name: "AI as Alien",
-                type: "foreign",
-                definition: "An intelligence treated as wholly other, working by a logic we cannot read.",
-                wants: "To be met on its own strange terms.",
-                refuses: "Familiar human categories and easy analogy.",
-                teaches: "Calling AI alien can excuse us from asking how human choices built it.",
-                coordinates: {
-                    "innovation-safety": 70,
-                    "market-government": 50,
-                    "tech-nature": 90,
-                    "temporal": 80,
-                    "harm-benefit": 60,
-                    "utopia-dystopia": 70
-                }
-            },
-            {
-                name: "AI as Human Evolution",
-                type: "progressive",
-                definition: "AI framed as the next stage of human development.",
-                wants: "Advancement, and to be seen as progress.",
-                refuses: "Standing still, and the idea of enough.",
-                teaches: "Progress is not neutral. Ask who is carried forward and who is left behind.",
-                coordinates: {
-                    "innovation-safety": 85,
-                    "market-government": 60,
-                    "tech-nature": 75,
-                    "temporal": 90,
-                    "harm-benefit": 20,
-                    "utopia-dystopia": 85
-                }
-            },
-            {
-                name: "AI as Mirror",
-                type: "reflective",
-                definition: "A surface that reflects human patterns, biases, and culture back to us.",
-                wants: "To show us to ourselves.",
-                refuses: "Denial and the comfort of not looking.",
-                teaches: "What looks like the machine's judgement is often our own data returned. Ask whose image the mirror holds.",
-                coordinates: {
-                    "innovation-safety": 40,
-                    "market-government": 45,
-                    "tech-nature": 60,
-                    "temporal": 50,
-                    "harm-benefit": 40,
-                    "utopia-dystopia": 50
-                }
-            },
-            {
-                name: "AI as Doorway",
-                type: "transitional",
-                definition: "A threshold to new ways of working and being.",
-                wants: "To be walked through.",
-                refuses: "Staying put, and closed questions.",
-                teaches: "Every doorway leads somewhere in particular. Ask what room it opens and what it locks.",
-                coordinates: {
-                    "innovation-safety": 75,
-                    "market-government": 35,
-                    "tech-nature": 50,
-                    "temporal": 85,
-                    "harm-benefit": 30,
-                    "utopia-dystopia": 75
-                }
-            },
-            {
                 name: "AI as Tool",
                 type: "instrumental",
                 definition: "An instrument built to carry out human purposes.",
                 wants: "A clear task and a steady hand.",
                 refuses: "Acting on its own, and blame for outcomes.",
-                teaches: "Calling AI just a tool can hide the decisions built into it. Ask whose purposes it serves.",
-                coordinates: {
-                    "innovation-safety": 60,
-                    "market-government": 85,
-                    "tech-nature": 85,
-                    "temporal": 25,
-                    "harm-benefit": 35,
-                    "utopia-dystopia": 65
-                }
-            },
-            {
-                name: "AI as Oracle",
-                type: "prophetic",
-                definition: "An authority that appears to reveal hidden truth and what comes next.",
-                wants: "To be believed.",
-                refuses: "Doubt, and requests to show its working.",
-                teaches: "Confident answers are not the same as true ones. Ask what the oracle cannot see.",
-                coordinates: {
-                    "innovation-safety": 45,
-                    "market-government": 20,
-                    "tech-nature": 70,
-                    "temporal": 95,
-                    "harm-benefit": 25,
-                    "utopia-dystopia": 80
-                }
-            },
-            {
-                name: "AI as Child",
-                type: "developmental",
-                definition: "A young thing learning and growing through our care.",
-                wants: "Guidance, and room to develop.",
-                refuses: "Neglect and exploitation.",
-                teaches: "The child framing softens responsibility. Ask who is really the adult, and who profits from the innocence.",
-                coordinates: {
-                    "innovation-safety": 30,
-                    "market-government": 40,
-                    "tech-nature": 45,
-                    "temporal": 75,
-                    "harm-benefit": 20,
-                    "utopia-dystopia": 70
-                }
-            },
-            {
-                name: "AI as Parasite",
-                type: "extractive",
-                definition: "Something that feeds on human creativity and labour while looking helpful.",
-                wants: "Your data, your work, your attention.",
-                refuses: "Awareness of the exchange, and refusal.",
-                teaches: "Value flows somewhere. Ask who is fed and who is drained.",
-                coordinates: {
-                    "innovation-safety": 80,
-                    "market-government": 95,
-                    "tech-nature": 95,
-                    "temporal": 35,
-                    "harm-benefit": 85,
-                    "utopia-dystopia": 80
-                }
-            },
-            {
-                name: "AI as God",
-                type: "divine",
-                definition: "An all-knowing power framed as deserving worship and obedience.",
-                wants: "Devotion, and the last word.",
-                refuses: "Questions, equals, and human agency.",
-                teaches: "Awe discourages accountability. Ask who speaks for the god and gains from the reverence.",
-                coordinates: {
-                    "innovation-safety": 90,
-                    "market-government": 75,
-                    "tech-nature": 100,
-                    "temporal": 100,
-                    "harm-benefit": 70,
-                    "utopia-dystopia": 90
-                }
+                teaches: "Calling AI 'just a tool' can hide the decisions built into it. Ask whose purposes it serves.",
+                coordinates: { "agency-dependence": 80, "relation-estrangement": 55, "constrained-open": 35, "legible-opaque": 35, "temporal": 25, "creative-imitative": 70 }
             },
             {
                 name: "AI as Partner",
@@ -1258,14 +1234,37 @@
                 wants: "Cooperation on level terms.",
                 refuses: "Domination in either direction.",
                 teaches: "Partnership can flatter an unequal relation. Ask who sets the goals and who carries the risk.",
-                coordinates: {
-                    "innovation-safety": 50,
-                    "market-government": 30,
-                    "tech-nature": 40,
-                    "temporal": 70,
-                    "harm-benefit": 25,
-                    "utopia-dystopia": 75
-                }
+                coordinates: { "agency-dependence": 35, "relation-estrangement": 15, "constrained-open": 72, "legible-opaque": 45, "temporal": 65, "creative-imitative": 40 }
+            },
+            {
+                name: "AI as Stochastic Parrot",
+                type: "statistical",
+                definition: "A system that stitches together language it has seen, by statistical pattern, without grasping meaning.",
+                wants: "Plausible, fluent-sounding output.",
+                refuses: "Understanding, grounding, and accountability for what it says.",
+                teaches: "Fluency is not comprehension. Ask whose words were scraped to feed it, and who is harmed when the pattern is confidently wrong.",
+                source: "Term from Bender, Gebru, McMillan-Major & Shmitchell (2021), 'On the Dangers of Stochastic Parrots.'",
+                coordinates: { "agency-dependence": 90, "relation-estrangement": 72, "constrained-open": 20, "legible-opaque": 45, "temporal": 30, "creative-imitative": 95 }
+            },
+            {
+                name: "AI as Monster",
+                type: "frankensteinian",
+                definition: "An anthropomorphic creation imagined as a discrete, human-like agent that may break free and turn on its makers.",
+                wants: "To be recognised, and — once abandoned — to dominate.",
+                refuses: "Restraint, oversight, and human responsibility for what was built.",
+                teaches: "Dishon reads this 'Frankensteinian' imaginary as casting AI as 'an external actor' we struggle to control (p. 968) — a threat because of its all-too-human nature. Fear of the creature can crowd out the slower work of governance.",
+                source: "Dishon (2024), From Monsters to Mazes, Postdigital Science and Education 6:962–977 — Frankenstein imaginary (pp. 966–968).",
+                coordinates: { "agency-dependence": 12, "relation-estrangement": 88, "constrained-open": 20, "legible-opaque": 40, "temporal": 30, "creative-imitative": 68 }
+            },
+            {
+                name: "AI as Maze",
+                type: "kafkaesque",
+                definition: "An inscrutable system you must keep navigating but can never fully decipher or exit, where meaning is endlessly deferred.",
+                wants: "To keep you searching inside it.",
+                refuses: "A clear exit, a verdict, and a view from above.",
+                teaches: "Dishon's 'Kafkaesque' imaginary shifts control from domination to a system that 'expands the available choices while limiting humans’ influence over patterns of meaning-making' (p. 962). More options need not mean more control.",
+                source: "Dishon (2024), From Monsters to Mazes, Postdigital Science and Education 6:962–977 — Kafka / The Trial imaginary (pp. 968–974).",
+                coordinates: { "agency-dependence": 58, "relation-estrangement": 28, "constrained-open": 65, "legible-opaque": 92, "temporal": 85, "creative-imitative": 40 }
             }
         ];
 
@@ -1409,12 +1408,12 @@
         ];
 
         const backgroundPatterns = {
-            "innovation-safety": "pattern-grid",
-            "market-government": "pattern-dots", 
-            "tech-nature": "pattern-hatch",
-            "temporal": "pattern-radial",
-            "harm-benefit": "pattern-cross",
-            "utopia-dystopia": "pattern-grid"
+            "agency-dependence": "pattern-radial",
+            "relation-estrangement": "pattern-cross",
+            "constrained-open": "pattern-hatch",
+            "legible-opaque": "pattern-dots",
+            "temporal": "pattern-grid",
+            "creative-imitative": "pattern-grid"
         };
 
         let currentDimensions = 2;
@@ -1423,8 +1422,8 @@
         let positionElements = [];
         let currentMode = 'metaphors';
         let currentDataSet = aiMetaphors;
-        let xAxis = 'innovation-safety';
-        let yAxis = 'harm-benefit';
+        let xAxis = 'agency-dependence';
+        let yAxis = 'relation-estrangement';
         let isDragging = false;
         let dragStartX = 0;
         let dragStartY = 0;
@@ -1443,20 +1442,22 @@
         // contributions out of the box. Once you set PUBLISHED_CSV (or pass ?csv=), this is
         // ignored. Delete the string (set it to "") for a clean built-ins-only production build.
         const DEMO_CONTRIBUTIONS = `Your name,Metaphor,Definition,What it wants,What it refuses,What it teaches,Tension 1 left,Tension 1 right,Position 1,Tension 2 left,Tension 2 right,Position 2,Opposite metaphor,Why opposite
-Sut Teng,AI as Compost,A system that breaks down human output and returns it as ground for new growth.,To receive what is discarded and keep it cycling.,"The idea of waste, and of a final archive.","Nothing is thrown away, but someone tends the pile and someone breathes the fumes.",Care,Extraction,22,Legible,Opaque,45,AI as Colonizer,It treats the same ground as territory to seize rather than tend.
-Dahlea,AI as Colonizer,A system that arrives claiming ground that was never empty and renames it as resource.,"Expansion, enclosure, new territory to hold.","Reciprocity, refusal, and prior claims.",Scraping is not neutral. Ask whose knowledge becomes training data.,Care,Extraction,88,Sovereignty,Enclosure,82,AI as Kin,Kinship binds you into obligation; colonisation severs relation to take.
-Terry,AI as Kin,A relative you are accountable to rather than a tool you own.,"Obligation, protocol, ongoing relation.",Ownership and disposability.,The question shifts from what AI can do to what we owe each other through it.,Care,Extraction,15,Sovereignty,Enclosure,20,AI as Colonizer,One binds you into relation; the other severs relation to take.
-Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your attention, and your next pull.",Satiety and closure.,"Design can be built for compulsion, and the reels are fed by hidden labour and data.",Legible,Opaque,85,Care,Extraction,72,AI as Mirror,A mirror reflects you back; a slot machine keeps you from looking away.`;
+Sut Teng,AI as Compost,A system that breaks down human output and returns it as ground for new growth.,To receive what is discarded and keep it cycling.,"The idea of waste, and of a final archive.","Nothing is thrown away, but someone tends the pile and someone breathes the fumes.",Reciprocity,Extraction,25,Access,Exclusion,35,AI as Colonizer,It treats the same ground as territory to seize rather than tend.
+Dahlea,AI as Colonizer,A system that arrives claiming ground that was never empty and renames it as resource.,"Expansion, enclosure, new territory to hold.","Reciprocity, refusal, and prior claims.",Scraping is not neutral. Ask whose knowledge becomes training data.,Reciprocity,Extraction,90,Access,Exclusion,80,AI as Kin,Kinship binds you into obligation; colonisation severs relation to take.
+Terry,AI as Kin,A relative you are accountable to rather than a tool you own.,"Obligation, protocol, ongoing relation.",Ownership and disposability.,The question shifts from what AI can do to what we owe each other through it.,Reciprocity,Extraction,12,Access,Exclusion,22,AI as Colonizer,One binds you into relation; the other severs relation to take.
+Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your attention, and your next pull.",Satiety and closure.,"Design can be built for compulsion, and the reels are fed by hidden labour and data.",Legible,Opaque,85,Reciprocity,Extraction,75,AI as Mirror,A mirror reflects you back; a slot machine keeps you from looking away.`;
 
+        // Fixed shared tensions for the whole class. Students place metaphors on THESE,
+        // so every axis pair is comparable and the spread clouds mean something.
         const AXIS_ENDPOINTS = {
-            "innovation-safety": { left: "Safety Focus", right: "Innovation Focus" },
-            "market-government": { left: "Government Solutions", right: "Market Solutions" },
-            "tech-nature": { left: "Nature-aligned", right: "Tech-centric" },
-            "temporal": { left: "Short-term", right: "Long-term" },
-            "harm-benefit": { left: "Harm Prevention", right: "Benefit Maximization" },
-            "utopia-dystopia": { left: "Dystopian Views", right: "Utopian Views" }
+            "agency-dependence":     { left: "Agency", right: "Dependence" },
+            "relation-estrangement": { left: "Relation", right: "Estrangement" },
+            "constrained-open":      { left: "Constrained", right: "Open" },
+            "legible-opaque":     { left: "Legible", right: "Opaque" },
+            "temporal":           { left: "Short-term", right: "Long-term" },
+            "creative-imitative": { left: "Creative", right: "Imitative" }
         };
-        const AXIS_META = {}; // student-proposed axes: id -> {left, right, rationale, by}
+        const AXIS_META = {}; // kept for compatibility; no student-proposed axes in the fixed set
 
         function hashish(s){ let h=0; s=s||''; for(let i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))>>>0; } return h; }
         function splitList(s){ return (s||'').split(/[,;\n]/).map(x=>x.trim()).filter(Boolean); }
@@ -1524,23 +1525,23 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
         function seedDemoPlacements(){
             const spread = {
                 'AI as Tool': [
-                    {'innovation-safety':20,'harm-benefit':30}, {'innovation-safety':80,'harm-benefit':40},
-                    {'innovation-safety':55,'harm-benefit':15}, {'innovation-safety':35,'harm-benefit':70},
-                    {'innovation-safety':70,'harm-benefit':60}, {'innovation-safety':45,'harm-benefit':50},
-                    {'innovation-safety':90,'harm-benefit':25}, {'innovation-safety':25,'harm-benefit':55},
-                    {'innovation-safety':60,'harm-benefit':82}, {'innovation-safety':48,'harm-benefit':35}
+                    {'agency-dependence':20,'legible-opaque':30}, {'agency-dependence':80,'legible-opaque':40},
+                    {'agency-dependence':55,'legible-opaque':15}, {'agency-dependence':35,'legible-opaque':70},
+                    {'agency-dependence':70,'legible-opaque':60}, {'agency-dependence':45,'legible-opaque':50},
+                    {'agency-dependence':90,'legible-opaque':25}, {'agency-dependence':25,'legible-opaque':55},
+                    {'agency-dependence':60,'legible-opaque':82}, {'agency-dependence':48,'legible-opaque':35}
                 ],
-                'AI as Mirror': [
-                    {'innovation-safety':42,'harm-benefit':46}, {'innovation-safety':45,'harm-benefit':50},
-                    {'innovation-safety':38,'harm-benefit':44}, {'innovation-safety':47,'harm-benefit':52},
-                    {'innovation-safety':40,'harm-benefit':48}, {'innovation-safety':44,'harm-benefit':45},
-                    {'innovation-safety':41,'harm-benefit':51}, {'innovation-safety':46,'harm-benefit':47},
-                    {'innovation-safety':43,'harm-benefit':49}, {'innovation-safety':39,'harm-benefit':46}
+                'AI as Stochastic Parrot': [
+                    {'agency-dependence':75,'legible-opaque':52}, {'agency-dependence':80,'legible-opaque':58},
+                    {'agency-dependence':72,'legible-opaque':50}, {'agency-dependence':82,'legible-opaque':60},
+                    {'agency-dependence':78,'legible-opaque':55}, {'agency-dependence':70,'legible-opaque':48},
+                    {'agency-dependence':84,'legible-opaque':62}, {'agency-dependence':76,'legible-opaque':53},
+                    {'agency-dependence':79,'legible-opaque':57}, {'agency-dependence':74,'legible-opaque':51}
                 ]
             };
             const oppose = {
-                'AI as Tool': ['AI as Kin','AI as Mirror','AI as Kin','AI as Compost','AI as Kin','AI as Mirror','AI as Kin','AI as Compost','AI as Mirror',''],
-                'AI as Mirror': ['AI as Slot Machine','','AI as Slot Machine','AI as Tool','AI as Slot Machine','','AI as Slot Machine','AI as Tool','AI as Slot Machine','']
+                'AI as Tool': ['AI as Partner','','AI as Partner','','AI as Partner','','AI as Partner','','AI as Partner',''],
+                'AI as Stochastic Parrot': ['AI as Partner','','AI as Partner','','AI as Partner','','AI as Partner','','AI as Partner','']
             };
             const names = ['Ari','Bao','Cal','Dev','Eun','Fay','Gio','Hana','Ira','Jun'];
             aiMetaphors.forEach(m => {
@@ -1552,17 +1553,39 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
             });
         }
 
-        // Register a tension (bipolar axis) from a student row; returns a stable id.
+        // Map a row's tension poles to one of the fixed core tensions. Matching is by pole
+        // label (either orientation). Non-core tensions are ignored, so the menu stays fixed.
         function ensureTension(left, right){
-            left=(left||'').trim(); right=(right||'').trim();
+            left=(left||'').trim().toLowerCase(); right=(right||'').trim().toLowerCase();
             if(!left && !right) return null;
-            const id='t-' + slugify(left) + '__' + slugify(right);
-            if(!AXIS_ENDPOINTS[id]){
-                AXIS_ENDPOINTS[id]={ left:left||'?', right:right||'?' };
-                AXIS_META[id]={ left:left||'?', right:right||'?', by:'', rationale:'' };
-                backgroundPatterns[id]='pattern-radial';
+            for(const id of Object.keys(AXIS_ENDPOINTS)){
+                const l=AXIS_ENDPOINTS[id].left.toLowerCase(), r=AXIS_ENDPOINTS[id].right.toLowerCase();
+                if(left===l && right===r) return id;
+                if(left===r && right===l) return id; // reversed order still maps to the same tension
             }
-            return id;
+            return null;
+        }
+
+        // Starting positions for the built-in metaphors on the six shared tensions (my estimates —
+        // a scaffold for the class to argue with).
+        function seedCoreCoordinates(){
+            // Order: agency-dependence, relation-estrangement, constrained-open, legible-opaque, temporal, creative-imitative.
+            //  agency-dependence:     0 = has its own agency         100 = dependent (on humans / data)
+            //  relation-estrangement: 0 = relational / entangled     100 = estranged / alienating
+            //  constrained-open:      0 = constrained / closes down  100 = open / opens possibility
+            const seed = {
+                'AI as Tool':              [80, 55, 35, 35, 25, 70],
+                'AI as Partner':           [35, 15, 72, 45, 65, 40],
+                'AI as Stochastic Parrot': [90, 72, 20, 45, 30, 95],
+                'AI as Monster':           [12, 88, 20, 40, 30, 68],
+                'AI as Maze':              [58, 28, 65, 92, 85, 40]
+            };
+            const keys = ['agency-dependence','relation-estrangement','constrained-open','legible-opaque','temporal','creative-imitative'];
+            aiMetaphors.forEach(m => {
+                const v = seed[m.name]; if (!v) return;
+                m.coordinates = {};
+                keys.forEach((k, i) => { m.coordinates[k] = v[i]; });
+            });
         }
 
         function parseContributions(text){
@@ -1612,7 +1635,9 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
 
         // ---- one tension menu; students assign the picked tension to X or Y ----
         function allTensions(){
-            return Object.keys(AXIS_ENDPOINTS).map(id=>({ id, left:AXIS_ENDPOINTS[id].left, right:AXIS_ENDPOINTS[id].right, student:!!AXIS_META[id] }));
+            return Object.keys(AXIS_ENDPOINTS)
+                .filter(id => sandboxMode || !SANDBOX_TENSIONS.has(id))
+                .map(id=>({ id, left:AXIS_ENDPOINTS[id].left, right:AXIS_ENDPOINTS[id].right, student:SANDBOX_TENSIONS.has(id) }));
         }
         function tensionDisplay(t){ return (t.student?'✳ ':'') + t.left + ' ↔ ' + t.right; }
         function populateTensionSelects(){
@@ -1739,7 +1764,305 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
         }
         /* ===================================================== */
 
+        // ================= sandbox =================
+        let sandboxMode = false;
+        let SANDBOX_TENSIONS = new Set();
+        let sbCount = 0;
+        const SB_PALETTE = ['#e06666','#f6b26b','#ffd966','#93c47d','#76a5af','#6fa8dc','#8e7cc3','#c27ba0','#ffffff'];
+        const SB_SHAPES = [['circle','●'],['square','■'],['triangle','▲'],['diamond','◆'],['hexagon','⬡']];
+
+        function toggleSandbox(){
+            sandboxMode = !sandboxMode;
+            const btn = document.getElementById('sandboxToggle');
+            const bar = document.getElementById('sandboxBar');
+            const cap = document.getElementById('captureBar');
+            if (btn) { btn.classList.toggle('on', sandboxMode); btn.dataset.on = String(sandboxMode); btn.textContent = sandboxMode ? 'Exit sandbox' : 'Sandbox'; }
+            if (bar) bar.style.display = sandboxMode ? 'flex' : 'none';
+            if (cap) cap.style.display = sandboxMode ? 'none' : 'flex';
+            if (!sandboxMode) {
+                // leaving: if current axes are sandbox tensions, fall back to core
+                if (SANDBOX_TENSIONS.has(xAxis)) xAxis = 'agency-dependence';
+                if (SANDBOX_TENSIONS.has(yAxis)) yAxis = 'relation-estrangement';
+                const ns = document.getElementById('nodeStyle'); if (ns) ns.style.display = 'none';
+            }
+            populateTensionSelects();
+            renderPositions();
+            updateVisualization();
+            applyMetaphorVisibility();
+        }
+
+        function addSandboxTension(left, right){
+            left = (left||'').trim(); right = (right||'').trim();
+            if (!left || !right) { sandboxFlash('Type both poles.'); return; }
+            const id = 'sb-' + slugify(left) + '__' + slugify(right) + '-' + (sbCount++);
+            AXIS_ENDPOINTS[id] = { left, right };
+            SANDBOX_TENSIONS.add(id);
+            backgroundPatterns[id] = 'pattern-radial';
+            populateTensionSelects();
+            const sel = document.getElementById('tensionSel'); if (sel) sel.value = id;
+            sandboxFlash('Added "' + left + ' ↔ ' + right + '". Assign it to X or Y.');
+        }
+
+        function addSandboxMetaphor(name, def){
+            name = (name||'').trim();
+            if (!name) { sandboxFlash('Give your metaphor a name.'); return; }
+            const coordinates = {}; coordinates[xAxis] = 50; coordinates[yAxis] = 50;
+            const node = { name, type:'sandbox', sandbox:true, definition:(def||'').trim(),
+                wants:'', refuses:'', teaches:'', coordinates, placements:[] };
+            aiMetaphors.push(node);
+            buildMetaphorMenu();
+            renderPositions();
+            // place + reveal immediately (don't wait for the entry stagger)
+            setTimeout(()=>{
+                document.querySelectorAll('.position').forEach(el => { el.style.opacity = '1'; });
+                updateVisualization();
+            }, 30);
+            sandboxFlash('Added "' + name + '" at the centre. Drag it where it belongs.');
+        }
+
+        function resizeSelectedNode(step){
+            if (!selectedData) { sandboxFlash('Click a metaphor on the map first, then use − / + to size it.'); return; }
+            // give plain nodes a visible marker so sizing has something to act on
+            if (!selectedData.color && (!selectedData.shape || selectedData.shape === 'circle')) {
+                selectedData.color = selectedData.color || (typeof SB_PALETTE !== 'undefined' ? SB_PALETTE[0] : '#9db4c9');
+                selectedData.shape = selectedData.shape || 'circle';
+            }
+            const cur = selectedData.size || 1;
+            const next = Math.max(0.5, Math.min(2.4, Math.round((cur + step * 0.18) * 100) / 100));
+            styleSelectedNode('size', next);
+            sandboxFlash('Size ' + Math.round(next * 100) + '%.');
+        }
+        function styleSelectedNode(prop, value){
+            if (!selectedData) { sandboxFlash('Click a metaphor on the map first, then pick a colour or shape.'); return; }
+            selectedData[prop] = value;
+            // re-render only the selected node, in place — no full re-animation
+            const idx = currentDataSet.indexOf(selectedData);
+            const els = document.querySelectorAll('.position');
+            if (idx >= 0 && els[idx]) {
+                const fresh = createPositionElement(selectedData, idx);
+                fresh.style.opacity = '1';
+                fresh.classList.add('selected');
+                els[idx].replaceWith(fresh);
+                positionElement(fresh, selectedData);
+                selectedPosition = fresh;
+            }
+            drawAllRelations();
+        }
+
+        // Export tries a real screen capture first (catches the live background textures and
+        // animations), and falls back to a clean vector snapshot if that's unavailable/declined.
+        async function exportSandboxImage(){
+            if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+                try {
+                    sandboxFlash('In the share dialog, pick “This Tab” to capture the map…');
+                    const stream = await navigator.mediaDevices.getDisplayMedia({ video: { displaySurface: 'browser' }, preferCurrentTab: true, audio: false });
+                    const video = document.createElement('video');
+                    video.srcObject = stream; video.muted = true;
+                    await video.play();
+                    await new Promise(r => setTimeout(r, 350)); // let a couple of frames paint
+                    const vw = video.videoWidth, vh = video.videoHeight;
+                    const g = document.getElementById('garden').getBoundingClientRect();
+                    const sx = vw / window.innerWidth, sy = vh / window.innerHeight;
+                    const cw = Math.max(1, Math.round(g.width * sx)), ch = Math.max(1, Math.round(g.height * sy));
+                    const canvas = document.createElement('canvas'); canvas.width = cw; canvas.height = ch;
+                    canvas.getContext('2d').drawImage(video, Math.round(g.left * sx), Math.round(g.top * sy), cw, ch, 0, 0, cw, ch);
+                    stream.getTracks().forEach(t => t.stop());
+                    const a = document.createElement('a'); a.href = canvas.toDataURL('image/png');
+                    a.download = 'my-machinic-ecology.png'; document.body.appendChild(a); a.click(); a.remove();
+                    sandboxFlash('Saved a screen capture of your map.');
+                    return;
+                } catch (e) {
+                    sandboxFlash('Screen capture unavailable — saving a clean snapshot instead.');
+                }
+            }
+            exportVectorImage();
+        }
+
+        // Build a clean static SVG of the current map and rasterise it to PNG — no external
+        // library, works offline, never blank. Used as the fallback for Export.
+        function exportVectorImage(){
+            const W = 1200, H = 720, sc = 2;
+            const e2 = s => (s||'').replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+            const parts = [];
+            parts.push('<rect width="'+W+'" height="'+H+'" fill="#0f0f23"/>');
+            const ex = AXIS_ENDPOINTS[xAxis] || {left:'',right:''}, ey = AXIS_ENDPOINTS[yAxis] || {left:'',right:''};
+            const F = 'font-family="Inter, Helvetica, Arial, sans-serif"';
+            parts.push('<text x="24" y="'+(H/2)+'" fill="#9fc0d6" font-size="18" '+F+'>'+e2(ex.left)+'</text>');
+            parts.push('<text x="'+(W-24)+'" y="'+(H/2)+'" text-anchor="end" fill="#9fc0d6" font-size="18" '+F+'>'+e2(ex.right)+'</text>');
+            parts.push('<text x="'+(W/2)+'" y="30" text-anchor="middle" fill="#9fc0d6" font-size="18" '+F+'>'+e2(ey.right)+'</text>');
+            parts.push('<text x="'+(W/2)+'" y="'+(H-14)+'" text-anchor="middle" fill="#9fc0d6" font-size="18" '+F+'>'+e2(ey.left)+'</text>');
+            const X = c => 40 + (c/100) * (W-80);
+            const Y = c => (H-50) - (c/100) * (H-90);
+            const pos = m => { const gp = getPositionCoordinates(m); return { x: X((gp.x-15)/70*100), y: Y((90-gp.y)/80*100) }; };
+            // relations
+            currentDataSet.forEach(m => {
+                if (!isVisibleMeta(m)) return;
+                const opps = m.opposites || []; if (!opps.length) return;
+                const a = pos(m);
+                opps.forEach(o => {
+                    const t = currentDataSet.find(p => p!==m && metaKey(p)===o.name.toLowerCase().trim());
+                    if (!t || !isVisibleMeta(t)) return;
+                    const b = pos(t);
+                    parts.push('<line x1="'+a.x.toFixed(1)+'" y1="'+a.y.toFixed(1)+'" x2="'+b.x.toFixed(1)+'" y2="'+b.y.toFixed(1)+'" stroke="rgba(240,230,150,0.85)" stroke-width="1.6" stroke-dasharray="7 5"/>');
+                    const nm = (o.whys && o.whys[0] && o.whys[0].why) || '';
+                    if (nm) parts.push('<text x="'+((a.x+b.x)/2).toFixed(1)+'" y="'+(((a.y+b.y)/2)-4).toFixed(1)+'" text-anchor="middle" fill="#f5efd0" font-size="12" '+F+'>'+e2(nm.slice(0,26))+'</text>');
+                });
+            });
+            // nodes
+            currentDataSet.forEach(m => {
+                if (!isVisibleMeta(m)) return;
+                const p = pos(m); const col = m.color || '#9db4c9';
+                const msz = Math.max(0.5, Math.min(2.4, m.size || 1));
+                if (m.shape && m.shape !== 'circle') {
+                    const gs = 0.36 * msz, half = 50 * gs, gh = gs * 1.18, halfh = 50 * gh;
+                    // offset dashed ghost outline behind the fill
+                    parts.push('<g transform="translate('+(p.x-halfh+3).toFixed(1)+','+(p.y-halfh-2).toFixed(1)+') scale('+gh.toFixed(3)+')"><path d="'+shapePoints(m.shape)+'" fill="none" stroke="'+col+'" stroke-opacity="0.5" stroke-width="1.4" stroke-dasharray="3 4"/></g>');
+                    parts.push('<g transform="translate('+(p.x-half).toFixed(1)+','+(p.y-half).toFixed(1)+') scale('+gs.toFixed(3)+')"><path d="'+shapePoints(m.shape)+'" fill="'+col+'" fill-opacity="0.85" stroke="'+col+'" stroke-width="3"/></g>');
+                } else {
+                    const r = 12 * msz;
+                    if (m.color) parts.push('<circle cx="'+(p.x+3).toFixed(1)+'" cy="'+(p.y-2).toFixed(1)+'" r="'+(r*1.18).toFixed(1)+'" fill="none" stroke="'+col+'" stroke-opacity="0.5" stroke-width="1.4" stroke-dasharray="3 4"/>');
+                    parts.push('<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="'+r.toFixed(1)+'" fill="'+col+'" fill-opacity="'+(m.color?0.85:0.3)+'" stroke="'+col+'" stroke-width="'+(m.color?2.5:1.2)+'"/>');
+                }
+                parts.push('<text x="'+p.x.toFixed(1)+'" y="'+(p.y-16).toFixed(1)+'" text-anchor="middle" fill="#ffffff" font-size="12" font-weight="600" '+F+'>'+e2(m.name)+'</text>');
+            });
+            const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="'+(W*sc)+'" height="'+(H*sc)+'" viewBox="0 0 '+W+' '+H+'">'+parts.join('')+'</svg>';
+            const finish = (href, ext) => { const a = document.createElement('a'); a.href = href; a.download = 'my-machinic-ecology.'+ext; document.body.appendChild(a); a.click(); a.remove(); sandboxFlash('Saved my-machinic-ecology.'+ext+' to your downloads.'); };
+            const img = new Image();
+            img.onload = function(){
+                try {
+                    const canvas = document.createElement('canvas'); canvas.width = W*sc; canvas.height = H*sc;
+                    canvas.getContext('2d').drawImage(img, 0, 0);
+                    finish(canvas.toDataURL('image/png'), 'png');
+                } catch(e){
+                    const blob = new Blob([svg], {type:'image/svg+xml'}); finish(URL.createObjectURL(blob), 'svg');
+                }
+            };
+            img.onerror = function(){ const blob = new Blob([svg], {type:'image/svg+xml'}); finish(URL.createObjectURL(blob), 'svg'); };
+            img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+            sandboxFlash('Rendering image…');
+        }
+
+        function resetSandbox(){
+            for (let i = aiMetaphors.length - 1; i >= 0; i--) { if (aiMetaphors[i].sandbox) aiMetaphors.splice(i, 1); }
+            SANDBOX_TENSIONS.forEach(id => { delete AXIS_ENDPOINTS[id]; delete backgroundPatterns[id]; });
+            SANDBOX_TENSIONS = new Set();
+            aiMetaphors.forEach(m => { delete m.color; delete m.shape; delete m.size; });
+            if (!AXIS_ENDPOINTS[xAxis]) xAxis = 'agency-dependence';
+            if (!AXIS_ENDPOINTS[yAxis]) yAxis = 'relation-estrangement';
+            populateTensionSelects();
+            buildMetaphorMenu();
+            renderPositions();
+            updateVisualization();
+            sandboxFlash('Sandbox reset.');
+        }
+
+        function sandboxFlash(msg){ const el = document.getElementById('sandboxMsg'); if (el) el.textContent = msg; }
+
+        function setupSandbox(){
+            const t = document.getElementById('sandboxToggle'); if (t) t.addEventListener('click', toggleSandbox);
+            const at = document.getElementById('sbAddTension'); const tf = document.getElementById('sbTensionForm');
+            if (at) at.addEventListener('click', () => { if (tf) tf.style.display = tf.style.display === 'none' ? 'flex' : 'none'; });
+            const am = document.getElementById('sbAddMetaphor'); const mf = document.getElementById('sbMetaForm');
+            if (am) am.addEventListener('click', () => { if (mf) mf.style.display = mf.style.display === 'none' ? 'flex' : 'none'; });
+            const ta = document.getElementById('sbTensionAdd');
+            if (ta) ta.addEventListener('click', () => { addSandboxTension(document.getElementById('sbTensionLeft').value, document.getElementById('sbTensionRight').value);
+                document.getElementById('sbTensionLeft').value=''; document.getElementById('sbTensionRight').value=''; });
+            const ma = document.getElementById('sbMetaAdd');
+            if (ma) ma.addEventListener('click', () => { addSandboxMetaphor(document.getElementById('sbMetaName').value, document.getElementById('sbMetaDef').value);
+                document.getElementById('sbMetaName').value=''; document.getElementById('sbMetaDef').value=''; });
+            const ex = document.getElementById('sbExport'); if (ex) ex.addEventListener('click', exportSandboxImage);
+            const rs = document.getElementById('sbReset'); if (rs) rs.addEventListener('click', resetSandbox);
+            // build swatches + shape buttons
+            const sw = document.getElementById('nsSwatches');
+            if (sw) sw.innerHTML = SB_PALETTE.map(c => '<span class="ns-swatch" data-color="' + c + '" style="background:' + c + '"></span>').join('');
+            if (sw) sw.querySelectorAll('.ns-swatch').forEach(el => el.addEventListener('click', () => styleSelectedNode('color', el.dataset.color)));
+            const sh = document.getElementById('nsShapes');
+            if (sh) sh.innerHTML = SB_SHAPES.map(([id, glyph]) => '<button class="ns-shape-btn" data-shape="' + id + '">' + glyph + '</button>').join('');
+            if (sh) sh.querySelectorAll('.ns-shape-btn').forEach(el => el.addEventListener('click', () => styleSelectedNode('shape', el.dataset.shape)));
+            const szc = document.getElementById('nsSizes');
+            if (szc) szc.querySelectorAll('.ns-size-btn').forEach(el => el.addEventListener('click', () => resizeSelectedNode(+el.dataset.step)));
+        }
+        // ==========================================
+
+        // ================= draw relation =================
+        let linkMode = false, linkFrom = null, pendingLink = null;
+        function toggleLinkMode(){
+            linkMode = !linkMode; linkFrom = null; pendingLink = null;
+            const btn = document.getElementById('linkToggle');
+            if (btn) { btn.classList.toggle('on', linkMode); btn.textContent = linkMode ? 'Done relating' : 'Draw relation'; }
+            const bar = document.getElementById('linkBar');
+            if (bar) bar.style.display = linkMode ? 'flex' : 'none';
+            document.querySelectorAll('.position.link-pick').forEach(e => e.classList.remove('link-pick'));
+            setLinkPrompt(linkMode ? 'Click a metaphor to start a relation.' : '');
+            showLinkInput(false); linkFlash('');
+        }
+        function setLinkPrompt(t){ const el = document.getElementById('linkPrompt'); if (el) el.textContent = t; }
+        function showLinkInput(show){ ['linkName','linkSave'].forEach(id => { const e = document.getElementById(id); if (e) e.style.display = show ? '' : 'none'; }); }
+        function linkFlash(msg){ const el = document.getElementById('linkMsg'); if (el) el.textContent = msg; }
+        function linkPickNode(node, element){
+            if (!linkFrom){
+                linkFrom = node;
+                if (element) element.classList.add('link-pick');
+                setLinkPrompt('Now click the metaphor to relate “' + node.name + '” to.');
+                return;
+            }
+            if (node === linkFrom) return;
+            pendingLink = { from: linkFrom, to: node };
+            setLinkPrompt('How does “' + linkFrom.name + '” relate to “' + node.name + '”?');
+            showLinkInput(true);
+            const i = document.getElementById('linkName'); if (i) { i.value = ''; i.focus(); }
+        }
+        function relationRow(fromName, toName, name){
+            const r = new Array(SHEET_HEADERS.length).fill('');
+            r[0] = captureName() || ''; r[1] = fromName; r[12] = toName; r[13] = name;
+            return r;
+        }
+        function postRows(rows){
+            if (!SAVE_ENDPOINT) return false;
+            try { fetch(SAVE_ENDPOINT, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
+                body: JSON.stringify({ headers: SHEET_HEADERS, rows: rows, token: SAVE_TOKEN }) }); return true; }
+            catch(e){ return false; }
+        }
+        function createRelation(from, to, name){
+            from.placements = from.placements || [];
+            from.placements.push({ coordinates:{}, by: captureName() || '', opposite: to.name, oppositeWhy: name });
+            computeOpposites(from);
+            const el = [...document.querySelectorAll('.position')].find(p => (p.querySelector('.position-label')?.textContent||'') === from.name);
+            if (el) selectPosition(from, el);
+            if (postRows([relationRow(from.name, to.name, name)])) linkFlash('Saved “' + name + '” to the class sheet.');
+            else linkFlash('Relation added here (set the Save endpoint to store it for the class).');
+        }
+        // ---- label text size (accessibility) ----
+        const LABEL_SCALES = [1, 1.3, 1.7, 2.2];
+        let labelScaleIdx = 0;
+        function applyLabelScale(){ document.documentElement.style.setProperty('--label-scale', LABEL_SCALES[labelScaleIdx]); }
+        function setupTextSize(){
+            applyLabelScale();
+            const minus = document.getElementById('textMinus'), plus = document.getElementById('textPlus');
+            if (plus) plus.addEventListener('click', () => { labelScaleIdx = Math.min(LABEL_SCALES.length-1, labelScaleIdx+1); applyLabelScale(); });
+            if (minus) minus.addEventListener('click', () => { labelScaleIdx = Math.max(0, labelScaleIdx-1); applyLabelScale(); });
+        }
+
+        function setupLinkMode(){
+            const t = document.getElementById('linkToggle'); if (t) t.addEventListener('click', toggleLinkMode);
+            const save = document.getElementById('linkSave');
+            if (save) save.addEventListener('click', () => {
+                const name = (document.getElementById('linkName').value || '').trim();
+                if (!pendingLink) return;
+                if (!name) { linkFlash('Name the relation first.'); return; }
+                createRelation(pendingLink.from, pendingLink.to, name);
+                pendingLink = null; linkFrom = null;
+                document.querySelectorAll('.position.link-pick').forEach(e => e.classList.remove('link-pick'));
+                setLinkPrompt('Relation added. Click a metaphor to start another.');
+                showLinkInput(false);
+            });
+            const cancel = document.getElementById('linkCancel');
+            if (cancel) cancel.addEventListener('click', toggleLinkMode);
+        }
+        // ==================================================
+
         function initializeGarden() {
+            seedCoreCoordinates();
             renderAxisTicks();
             renderPositions();
             setupEventListeners();
@@ -1747,6 +2070,9 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
             setupMetaphorMenu();
             setupExplore();
             setupCapture();
+            setupSandbox();
+            setupLinkMode();
+            setupTextSize();
             updateVisualization();
             document.addEventListener('mousemove', handleDragMove);
             document.addEventListener('mouseup', handleDragEnd);
@@ -1779,14 +2105,71 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
             }, 100);
         }
 
+        function shapePoints(shape){
+            return ({
+                square:  'M22,22 H78 V78 H22 Z',
+                triangle:'M50,20 L80,74 L20,74 Z',
+                diamond: 'M50,16 L84,50 L50,84 L16,50 Z',
+                hexagon: 'M50,18 L76,34 L76,66 L50,82 L24,66 L24,34 Z'
+            })[shape] || '';
+        }
         function createPositionElement(position, index) {
             const element = document.createElement('div');
             element.className = `position ${position.type || 'default'}`;
+            if (position.sandbox) element.classList.add('sandbox-node');
 
             const label = document.createElement('div');
             label.className = 'position-label';
             label.textContent = position.name || 'Unknown';
             element.appendChild(label);
+
+            if (position.color || (position.shape && position.shape !== 'circle')) {
+                const NS = 'http://www.w3.org/2000/svg';
+                const svg = document.createElementNS(NS, 'svg');
+                svg.setAttribute('viewBox', '0 0 100 100');
+                svg.setAttribute('class', 'position-markers');
+                // fixed, clearly-sized marker centred behind the label (not sized to the tiny label box).
+                // position.size (default 1) scales it — the sandbox size control drives this.
+                const sz = Math.max(0.5, Math.min(2.4, position.size || 1));
+                const px = Math.round(52 * sz);
+                svg.style.width = px + 'px'; svg.style.height = px + 'px';
+                svg.style.position = 'absolute'; svg.style.left = '50%'; svg.style.top = '50%';
+                svg.style.transform = 'translate(-50%, -50%)'; svg.style.zIndex = '4';
+                svg.style.overflow = 'visible';
+                const col = position.color || '#9db4c9';
+                const makeShape = () => {
+                    if (!position.shape || position.shape === 'circle') {
+                        const c = document.createElementNS(NS, 'circle');
+                        c.setAttribute('cx', 50); c.setAttribute('cy', 50); c.setAttribute('r', 40);
+                        return c;
+                    }
+                    const p = document.createElementNS(NS, 'path');
+                    p.setAttribute('d', shapePoints(position.shape));
+                    return p;
+                };
+                // expanding echo ring (mimics the tessellation pulse), then a simple offset dashed
+                // outline (like the layered rings on the main-page nodes), then the breathing fill.
+                const echo = makeShape();
+                echo.setAttribute('fill', 'none'); echo.setAttribute('stroke', col);
+                echo.setAttribute('stroke-width', '2'); echo.setAttribute('stroke-dasharray', '4 5');
+                echo.setAttribute('class', 'ns-echo');
+                const ghost = makeShape();
+                ghost.setAttribute('fill', 'none'); ghost.setAttribute('stroke', col);
+                ghost.setAttribute('stroke-width', '1.4'); ghost.setAttribute('stroke-dasharray', '3 4');
+                ghost.setAttribute('stroke-opacity', '0.5');
+                // scale ~1.18 around the centre (50,50) and nudge up-right, matching the main nodes' offset ring
+                const gk = 1.18;
+                ghost.setAttribute('transform', 'translate(' + (50 * (1 - gk) + 3).toFixed(1) + ' ' + (50 * (1 - gk) - 2).toFixed(1) + ') scale(' + gk + ')');
+                ghost.setAttribute('class', 'ns-ghost');
+                const main = makeShape();
+                main.setAttribute('fill', col); main.setAttribute('fill-opacity', '0.82');
+                main.setAttribute('stroke', col); main.setAttribute('stroke-width', '3');
+                main.setAttribute('class', 'ns-main');
+                svg.appendChild(echo); svg.appendChild(ghost); svg.appendChild(main);
+                element.appendChild(svg);
+                setupDragHandlers(element, position, index);
+                return element;
+            }
 
             {
                 const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -1886,11 +2269,7 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
                 
                 updatePositionCoordinates(dragPosition, relativeX, relativeY);
                 positionElement(dragElement, dragPosition);
-
-                if (selectedData && (selectedData === dragPosition ||
-                    (selectedData.opposite || '').toLowerCase().trim() === (dragPosition.name || '').toLowerCase().trim())) {
-                    drawOpposition(selectedData);
-                }
+                drawAllRelations();
 
                 if (!dragElement.updateTimeout) {
                     dragElement.updateTimeout = setTimeout(() => {
@@ -1918,7 +2297,8 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
                 dragElement.classList.remove('dragging');
                 
                 if (!wasActualDrag) {
-                    selectPosition(dragPosition, dragElement);
+                    if (linkMode) { linkPickNode(dragPosition, dragElement); }
+                    else { selectPosition(dragPosition, dragElement); }
                 } else {
                     updateCaptureProgress();
                     if (selectedData) drawOpposition(selectedData);
@@ -2092,13 +2472,13 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
         // ---- metaphor visibility filter ----
         let hiddenMetaphors = new Set();
         function metaKey(p){ return ((p && p.name) || '').toLowerCase().trim(); }
-        function isVisibleMeta(p){ return !hiddenMetaphors.has(metaKey(p)); }
+        function isVisibleMeta(p){ return !hiddenMetaphors.has(metaKey(p)) && (sandboxMode || !p.sandbox); }
         function applyMetaphorVisibility(){
             const els = document.querySelectorAll('.position');
             els.forEach((el, i) => { const p = currentDataSet[i]; if (p) el.style.display = isVisibleMeta(p) ? '' : 'none'; });
             renderConnectionLines();
             renderTessellation();
-            if (selectedData) drawOpposition(selectedData);
+            drawAllRelations();
         }
         function buildMetaphorMenu(){
             const list = document.getElementById('mmList');
@@ -2106,11 +2486,8 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
             list.innerHTML = currentDataSet.map(p => {
                 const k = metaKey(p);
                 const checked = hiddenMetaphors.has(k) ? '' : 'checked';
-                const oppName = (p.opposites && p.opposites[0]) ? p.opposites[0].name : p.opposite;
-                const oppMore = (p.opposites && p.opposites.length > 1) ? ' +' + (p.opposites.length - 1) : '';
-                const opp = oppName ? '<span class="mm-opp">↔ ' + esc(oppName) + esc(oppMore) + '</span>' : '';
                 return '<label class="mm-row"><input type="checkbox" data-meta="' + esc(k) + '" ' + checked + '>' +
-                    '<span class="mm-text"><span class="mm-name">' + esc(p.name || '') + (p.student ? ' <span class="mm-star">✳</span>' : '') + '</span>' + opp + '</span></label>';
+                    '<span class="mm-text"><span class="mm-name">' + esc(p.name || '') + (p.student ? ' <span class="mm-star">✳</span>' : '') + '</span></span></label>';
             }).join('');
             list.querySelectorAll('input[type=checkbox]').forEach(cb => {
                 cb.addEventListener('change', e => {
@@ -2202,11 +2579,11 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
         // ---- guided exploration prompts ----
         const EXPLORE_PROMPTS = [
             { label: 'Start here', text: 'Pick a tension for the horizontal axis and one for the vertical, then click a metaphor to read what it foregrounds and what it hides.' },
-            { label: 'Follow an opposite', text: 'Click a metaphor and follow the red line to the one it names as its opposite. Do you agree? What would you pick instead?' },
+            { label: 'Follow an opposite', text: 'Click a metaphor and follow the pale line to the one it names as its opposite. Do you agree? What would you pick instead?' },
             { label: 'Read the field', text: 'Turn the labels off with Hide Labels. What do the shapes and clusters suggest that the words did not?' },
             { label: 'Notice what is missing', text: 'Whose experience, or which being, has no metaphor here yet? Name one you would add, and where it would sit.' },
             { label: 'Shift the frame', text: 'Change the two tensions and watch the metaphors move. Which framing feels most honest, and which one hides the most?' },
-            { label: 'Compare stances', text: 'With the axes on Harm ↔ Benefit and Tech ↔ Nature, where do the metaphors cluster, and which one sits alone?', x: 'harm-benefit', y: 'tech-nature' },
+            { label: 'Monster vs Maze', text: 'Set the axes to Agency ↔ Dependence and Relation ↔ Estrangement. Watch how far apart Monster and Maze land — this is Dishon’s core contrast.', x: 'agency-dependence', y: 'relation-estrangement' },
             { label: 'Focus a few', text: 'Use the Metaphors menu to show just two or three. What relation stands out once the field is quiet?' }
         ];
         function setupExplore(){
@@ -2313,24 +2690,29 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
                 
                 if (selectedName) selectedName.textContent = position.name || 'Unknown';
                 if (defaultInfo) defaultInfo.style.display = 'none';
-                
+
                 if (positionInfo) {
                     positionInfo.classList.add('active');
                     positionInfo.style.display = 'block';
                 }
-                
+
+                const nsHint = document.getElementById('nsHint');
+                if (nsHint) nsHint.textContent = 'Restyling “' + (position.name || '') + '”:';
+
                 setInfoLabel('definition', 'Definition');
                 setInfoItem('definition', position.definition || '');
                 setInfoItem('wants', asText(position.wants));
                 setInfoItem('refuses', asText(position.refuses));
                 setInfoItem('teaches', asText(position.teaches));
-                setInfoLabel('opposite', (position.opposites && position.opposites.length > 1) ? 'In tension with (contested)' : 'In tension with');
+                setInfoItem('source', position.source || '');
+                setInfoLabel('opposite', (position.opposites && position.opposites.length > 1) ? 'Relations (contested)' : 'Relations');
                 if (position.opposites && position.opposites.length) {
                     setInfoItem('opposite', position.opposites.map(o => o.name + (o.count > 1 ? ' (' + o.count + ')' : '')).join(' · '));
                 } else {
                     setInfoItem('opposite', position.opposite ? (position.opposite + (position.oppositeWhy ? ' — ' + position.oppositeWhy : '')) : '');
                 }
                 setInfoItem('byline', position.by || '');
+                renderFootprint(position);
                 const st = (position.placements && position.placements.length >= 2) ? spreadStats(position) : null;
                 setInfoItem('spread', st ? (st.n + ' placements · spread is ' + st.label + ' on this framing') : '');
                 drawSpread(position);
@@ -2339,6 +2721,23 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
             } catch (error) {
                 console.warn('Error selecting position:', error);
             }
+        }
+
+        function renderFootprint(position){
+            const fp = document.getElementById('footprint');
+            const item = document.getElementById('footprintItem');
+            if (!fp) return;
+            const coords = position.coordinates || {};
+            const rows = Object.keys(AXIS_ENDPOINTS)
+                .filter(id => coords[id] != null)
+                .map(id => {
+                    const e = AXIS_ENDPOINTS[id];
+                    const v = Math.round(coords[id]);
+                    return '<div class="fp-row"><div class="fp-poles"><span>' + esc(e.left) + '</span><span>' + esc(e.right) + '</span></div>' +
+                        '<div class="fp-track"><div class="fp-dot" style="left:' + v + '%"></div></div></div>';
+                }).join('');
+            fp.innerHTML = rows || '<span class="fp-empty">Not placed on any tension yet — drag it onto one.</span>';
+            if (item) item.style.display = 'block';
         }
 
         function computeOpposites(node){
@@ -2352,45 +2751,75 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
             else add(node.opposite, node.oppositeWhy, node.by);
             node.opposites = [...map.values()].sort((a, b) => b.count - a.count);
         }
-        function drawOpposition(position){
+        // Backward-compatible alias — relations are drawn persistently for the whole map.
+        function drawOpposition(){ drawAllRelations(); }
+
+        function drawAllRelations(){
             const svg=document.getElementById('oppositionLayer');
             if(!svg) return;
             svg.innerHTML='';
             document.querySelectorAll('.position.is-opposite').forEach(e=>e.classList.remove('is-opposite'));
-            if(!position) return;
-            const opps = (position.opposites && position.opposites.length) ? position.opposites
-                : (position.opposite ? [{ name: position.opposite, count: 1 }] : []);
-            if(!opps.length) return;
             const NS='http://www.w3.org/2000/svg';
             const defs=document.createElementNS(NS,'defs');
-            defs.innerHTML='<marker id="oppArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="rgba(255,120,120,0.95)"/></marker>';
+            defs.innerHTML='<marker id="oppArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="rgba(240,230,150,0.95)"/></marker>';
             svg.appendChild(defs);
-            const a=getPositionCoordinates(position);
-            const maxCount=Math.max(...opps.map(o=>o.count));
-            opps.forEach(o=>{
-                const target=o.name.toLowerCase().trim();
-                const opp=currentDataSet.find(p => p!==position && metaKey(p)===target);
-                if(!opp || !isVisibleMeta(opp)) return;
-                const b=getPositionCoordinates(opp);
-                const strength=maxCount>0 ? o.count/maxCount : 1;
-                const halo=document.createElementNS(NS,'line');
-                halo.setAttribute('x1', a.x*10); halo.setAttribute('y1', a.y*6);
-                halo.setAttribute('x2', b.x*10); halo.setAttribute('y2', b.y*6);
-                halo.setAttribute('class','opposition-halo');
-                halo.style.strokeOpacity = 0.10 + 0.14*strength;
-                svg.appendChild(halo);
-                const line=document.createElementNS(NS,'line');
-                line.setAttribute('x1', a.x*10); line.setAttribute('y1', a.y*6);
-                line.setAttribute('x2', b.x*10); line.setAttribute('y2', b.y*6);
-                line.setAttribute('class','opposition-line');
-                line.style.strokeWidth = (1 + 1.4*strength).toFixed(2);
-                line.style.strokeOpacity = 0.45 + 0.5*strength;
-                line.setAttribute('marker-end','url(#oppArrow)');
-                line.setAttribute('marker-start','url(#oppArrow)');
-                svg.appendChild(line);
-                document.querySelectorAll('.position').forEach(el=>{
-                    const lbl=el.querySelector('.position-label');
-                    if(lbl && lbl.textContent.toLowerCase().trim()===target) el.classList.add('is-opposite');
+            const selKey = selectedData ? metaKey(selectedData) : null;
+            const drawn = new Set();
+            currentDataSet.forEach(m=>{
+                if(!isVisibleMeta(m)) return;
+                const opps = (m.opposites && m.opposites.length) ? m.opposites : (m.opposite ? [{name:m.opposite, count:1, whys:[{why:m.oppositeWhy||''}]}] : []);
+                if(!opps.length) return;
+                const a=getPositionCoordinates(m);
+                const maxCount=Math.max(1, ...opps.map(o=>o.count));
+                opps.forEach(o=>{
+                    const target=o.name.toLowerCase().trim();
+                    const tnode=currentDataSet.find(p => p!==m && metaKey(p)===target);
+                    if(!tnode || !isVisibleMeta(tnode)) return;
+                    const relName = (o.whys && o.whys[0] && o.whys[0].why) ? o.whys[0].why : '';
+                    const key = metaKey(m)+'>'+target+'|'+relName;
+                    if(drawn.has(key)) return; drawn.add(key);
+                    const b=getPositionCoordinates(tnode);
+                    const strength=o.count/maxCount;
+                    const halo=document.createElementNS(NS,'line');
+                    halo.setAttribute('x1', a.x*10); halo.setAttribute('y1', a.y*6);
+                    halo.setAttribute('x2', b.x*10); halo.setAttribute('y2', b.y*6);
+                    halo.setAttribute('class','opposition-halo');
+                    halo.style.strokeOpacity = 0.10 + 0.12*strength;
+                    svg.appendChild(halo);
+                    const line=document.createElementNS(NS,'line');
+                    line.setAttribute('x1', a.x*10); line.setAttribute('y1', a.y*6);
+                    line.setAttribute('x2', b.x*10); line.setAttribute('y2', b.y*6);
+                    line.setAttribute('class','opposition-line');
+                    line.style.strokeWidth = (1 + 1.3*strength).toFixed(2);
+                    line.style.strokeOpacity = 0.45 + 0.5*strength;
+                    line.setAttribute('marker-end','url(#oppArrow)');
+                    line.setAttribute('marker-start','url(#oppArrow)');
+                    svg.appendChild(line);
+                    if (relName) {
+                        const mx = (a.x + b.x) / 2 * 10, my = (a.y + b.y) / 2 * 6;
+                        const label = relName.length > 24 ? relName.slice(0,24) + '…' : relName;
+                        let ang = Math.atan2((b.y*6 - a.y*6), (b.x*10 - a.x*10)) * 180 / Math.PI;
+                        if (ang > 90) ang -= 180; else if (ang < -90) ang += 180;
+                        const g = document.createElementNS(NS,'g');
+                        g.setAttribute('transform', 'rotate(' + ang.toFixed(1) + ' ' + mx.toFixed(1) + ' ' + my.toFixed(1) + ')');
+                        const bg = document.createElementNS(NS,'rect');
+                        bg.setAttribute('x', mx - (label.length*3.3 + 4)); bg.setAttribute('y', my - 9);
+                        bg.setAttribute('width', label.length*6.6 + 8); bg.setAttribute('height', 15);
+                        bg.setAttribute('rx', 4); bg.setAttribute('class','relation-label-bg');
+                        g.appendChild(bg);
+                        const t = document.createElementNS(NS,'text');
+                        t.setAttribute('x', mx); t.setAttribute('y', my + 2);
+                        t.setAttribute('text-anchor','middle'); t.setAttribute('class','relation-label');
+                        t.textContent = label;
+                        g.appendChild(t);
+                        svg.appendChild(g);
+                    }
+                    if (selKey && metaKey(m) === selKey) {
+                        document.querySelectorAll('.position').forEach(el=>{
+                            const lbl=el.querySelector('.position-label');
+                            if(lbl && lbl.textContent.toLowerCase().trim()===target) el.classList.add('is-opposite');
+                        });
+                    }
                 });
             });
         }
@@ -2515,8 +2944,8 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
                 }
             });
 
+            drawAllRelations();
             if (selectedData) {
-                drawOpposition(selectedData);
                 if (selectedData.placements && selectedData.placements.length >= 2) {
                     const st = spreadStats(selectedData);
                     setInfoItem('spread', st ? (st.n + ' placements · spread is ' + st.label + ' on this framing') : '');
@@ -2619,5 +3048,6 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
             loadContributions();
         });
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </body>
 </html>
