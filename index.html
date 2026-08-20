@@ -1003,7 +1003,8 @@
         /* --- declared opposition edge --- */
         /* --- placement spread cloud --- */
         .spread-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 7; }
-        .spread-ellipse { fill: rgba(96,165,250,0.10); stroke: rgba(96,165,250,0.55); stroke-width: 1; stroke-dasharray: 4 4; }
+        .spread-ellipse { fill: rgba(96,165,250,0.06); stroke: rgba(96,165,250,0.28); stroke-width: 1; stroke-dasharray: 4 5; pointer-events: none; }
+        .spread-ellipse-sel { fill: rgba(96,165,250,0.13); stroke: rgba(147,197,253,0.7); stroke-width: 1.4; stroke-dasharray: none; }
         .spread-dot { fill: rgba(147,197,253,0.9); }
 
         .opposition-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9; }
@@ -1024,7 +1025,7 @@
     <div class="container">
         <header>
             <h1>Machinic Ecology</h1>
-            <p class="subtitle">A space for thinking with the metaphors we use for AI. Choose two tensions for the axes and drag each metaphor to where you think it sits. Click one to read what it foregrounds and what it hides, and follow the pale line to the metaphor it argues against. Notice what is missing, and what moves when you change the frame.</p>
+            <p class="subtitle">A shared map for thinking with the metaphors we use for AI. Drag each metaphor to where you think it sits on the three tensions — Agency ↔ Dependence, Relation ↔ Estrangement, Constrained ↔ Open — then add one metaphor of your own and save. The clouds show where the whole class landed: tight where we agree, wide where we don't.</p>
             <div class="explore-bar">
                 <span class="explore-label">Where to start</span>
                 <select class="axis-select" id="exploreSel"></select>
@@ -1050,52 +1051,10 @@
                             <div class="mm-list" id="mmList"></div>
                         </div>
                     </div>
-                    <button class="axis-selector" id="linkToggle" data-on="false">Draw relation</button>
-                    <button class="axis-selector" id="sandboxToggle" data-on="false">Sandbox</button>
                     <span class="text-size" title="Label text size"><button class="axis-mini" id="textMinus">A−</button><button class="axis-mini" id="textPlus">A+</button></span>
                 </div>
             </div>
             <div class="axis-readout" id="axisReadout"></div>
-
-            <div class="link-bar" id="linkBar" style="display: none;">
-                <span class="link-prompt" id="linkPrompt"></span>
-                <input class="capture-name" id="linkName" type="text" placeholder="name the relation (e.g. counters, extends, echoes)" style="display:none; width:280px;" />
-                <button class="axis-mini" id="linkSave" style="display:none;">Add relation</button>
-                <button class="axis-mini" id="linkCancel">Cancel</button>
-                <span class="capture-msg" id="linkMsg"></span>
-            </div>
-
-            <div class="sandbox-bar" id="sandboxBar" style="display: none;">
-                <span class="sandbox-tag">✎ Sandbox — your private space. Nothing here is saved to the class.</span>
-                <button class="axis-mini" id="sbAddTension">+ Tension</button>
-                <button class="axis-mini" id="sbAddMetaphor">+ Metaphor</button>
-                <button class="axis-mini" id="sbExport">Export image</button>
-                <button class="axis-mini" id="sbReset">Reset</button>
-                <span class="sandbox-msg" id="sandboxMsg"></span>
-                <div class="sb-form" id="sbTensionForm" style="display:none;">
-                    <input id="sbTensionLeft" type="text" placeholder="left pole" />
-                    <span>↔</span>
-                    <input id="sbTensionRight" type="text" placeholder="right pole" />
-                    <button class="axis-mini" id="sbTensionAdd">Add</button>
-                </div>
-                <div class="sb-form" id="sbMetaForm" style="display:none;">
-                    <input id="sbMetaName" type="text" placeholder="metaphor name (e.g. AI as River)" />
-                    <input id="sbMetaDef" type="text" placeholder="one-line definition (optional)" />
-                    <button class="axis-mini" id="sbMetaAdd">Add</button>
-                </div>
-                <div class="node-style" id="nodeStyle">
-                    <span class="ns-label" id="nsHint">Click a metaphor, then restyle it:</span>
-                    <span class="ns-label">Colour</span>
-                    <div class="ns-swatches" id="nsSwatches"></div>
-                    <span class="ns-label">Shape</span>
-                    <div class="ns-shapes" id="nsShapes"></div>
-                    <span class="ns-label">Size</span>
-                    <div class="ns-sizes" id="nsSizes">
-                        <button class="ns-size-btn" data-step="-1" title="Smaller">−</button>
-                        <button class="ns-size-btn" data-step="1" title="Bigger">+</button>
-                    </div>
-                </div>
-            </div>
 
             <div class="contrib-status" id="contribStatus"></div>
 
@@ -1160,18 +1119,24 @@
         </div>
 
         <div class="capture-bar" id="captureBar">
-            <span class="capture-progress" id="captureProgress">Placed 0 of 5 on the current tensions</span>
+            <span class="capture-progress" id="captureProgress">Placed 0 of 5 metaphors on all three tensions</span>
             <input class="capture-name" id="captureName" type="text" placeholder="Your name" />
+            <button class="axis-mini" id="addMetaBtn">+ Add your metaphor</button>
             <button class="axis-mini" id="captureSave">Save my placements</button>
             <button class="axis-mini" id="captureCopy">Copy rows</button>
             <span class="capture-msg" id="captureMsg"></span>
+            <div class="sb-form" id="addMetaForm" style="display:none; width:100%;">
+                <input id="myMetaName" type="text" placeholder="your metaphor (e.g. AI as River)" style="width:240px;" />
+                <input id="myMetaDef" type="text" placeholder="one-line definition" style="width:320px;" />
+                <button class="axis-mini" id="myMetaAdd">Add</button>
+            </div>
         </div>
 
         <div class="info-panel">
             <h3 id="selectedName">Select a metaphor to explore</h3>
             <div id="defaultInfo">
                 <p style="color: #a0aec0; font-style: italic;">
-                    Click any metaphor to read what it foregrounds and what it obscures. Drag metaphors to reposition them along the active tension.
+                    Click any metaphor to read what it foregrounds and what it hides. Drag it to where you think it sits — switch the axis to set all three tensions. Then add your own metaphor and Save.
                 </p>
             </div>
             
@@ -1225,7 +1190,7 @@
                 wants: "A clear task and a steady hand.",
                 refuses: "Acting on its own, and blame for outcomes.",
                 teaches: "Calling AI 'just a tool' can hide the decisions built into it. Ask whose purposes it serves.",
-                coordinates: { "agency-dependence": 80, "relation-estrangement": 55, "constrained-open": 35, "legible-opaque": 35, "temporal": 25, "creative-imitative": 70 }
+                coordinates: { "agency-dependence": 80, "relation-estrangement": 55, "constrained-open": 35 }
             },
             {
                 name: "AI as Partner",
@@ -1234,7 +1199,7 @@
                 wants: "Cooperation on level terms.",
                 refuses: "Domination in either direction.",
                 teaches: "Partnership can flatter an unequal relation. Ask who sets the goals and who carries the risk.",
-                coordinates: { "agency-dependence": 35, "relation-estrangement": 15, "constrained-open": 72, "legible-opaque": 45, "temporal": 65, "creative-imitative": 40 }
+                coordinates: { "agency-dependence": 35, "relation-estrangement": 15, "constrained-open": 72 }
             },
             {
                 name: "AI as Stochastic Parrot",
@@ -1244,7 +1209,7 @@
                 refuses: "Understanding, grounding, and accountability for what it says.",
                 teaches: "Fluency is not comprehension. Ask whose words were scraped to feed it, and who is harmed when the pattern is confidently wrong.",
                 source: "Term from Bender, Gebru, McMillan-Major & Shmitchell (2021), 'On the Dangers of Stochastic Parrots.'",
-                coordinates: { "agency-dependence": 90, "relation-estrangement": 72, "constrained-open": 20, "legible-opaque": 45, "temporal": 30, "creative-imitative": 95 }
+                coordinates: { "agency-dependence": 90, "relation-estrangement": 72, "constrained-open": 20 }
             },
             {
                 name: "AI as Monster",
@@ -1254,7 +1219,7 @@
                 refuses: "Restraint, oversight, and human responsibility for what was built.",
                 teaches: "Dishon reads this 'Frankensteinian' imaginary as casting AI as 'an external actor' we struggle to control (p. 968) — a threat because of its all-too-human nature. Fear of the creature can crowd out the slower work of governance.",
                 source: "Dishon (2024), From Monsters to Mazes, Postdigital Science and Education 6:962–977 — Frankenstein imaginary (pp. 966–968).",
-                coordinates: { "agency-dependence": 12, "relation-estrangement": 88, "constrained-open": 20, "legible-opaque": 40, "temporal": 30, "creative-imitative": 68 }
+                coordinates: { "agency-dependence": 12, "relation-estrangement": 88, "constrained-open": 20 }
             },
             {
                 name: "AI as Maze",
@@ -1264,156 +1229,15 @@
                 refuses: "A clear exit, a verdict, and a view from above.",
                 teaches: "Dishon's 'Kafkaesque' imaginary shifts control from domination to a system that 'expands the available choices while limiting humans’ influence over patterns of meaning-making' (p. 962). More options need not mean more control.",
                 source: "Dishon (2024), From Monsters to Mazes, Postdigital Science and Education 6:962–977 — Kafka / The Trial imaginary (pp. 968–974).",
-                coordinates: { "agency-dependence": 58, "relation-estrangement": 28, "constrained-open": 65, "legible-opaque": 92, "temporal": 85, "creative-imitative": 40 }
+                coordinates: { "agency-dependence": 58, "relation-estrangement": 28, "constrained-open": 65 }
             }
         ];
 
-        const positions = [
-            {
-                name: "Tech Accelerationist",
-                type: "human",
-                essence: "Believes speed of innovation will solve all problems faster than problems can emerge",
-                metabolizes: ["venture capital", "breakthrough narratives", "exponential curves"],
-                attracts: ["disruption", "scale", "competitive advantage"],
-                repels: ["regulation", "precaution", "democratic slowness"],
-                rhythm: "rapid, urgent pulses",
-                coordinates: {
-                    "innovation-safety": 90,
-                    "market-government": 85,
-                    "tech-nature": 95,
-                    "temporal": 15,
-                    "harm-benefit": 75,
-                    "utopia-dystopia": 80
-                }
-            },
-            {
-                name: "AI Safety Researcher",
-                type: "human", 
-                essence: "Focuses on preventing catastrophic risks from advanced AI systems",
-                metabolizes: ["research papers", "risk scenarios", "technical alignment"],
-                attracts: ["caution", "governance", "long-term thinking"],
-                repels: ["rushing to market", "capability races", "ignoring risks"],
-                rhythm: "slow, deliberate breathing",
-                coordinates: {
-                    "innovation-safety": 15,
-                    "market-government": 30,
-                    "tech-nature": 70,
-                    "temporal": 85,
-                    "harm-benefit": 25,
-                    "utopia-dystopia": 30
-                }
-            },
-            {
-                name: "Large Language Model",
-                type: "algorithmic",
-                essence: "Processes language patterns without understanding, dreams in tokens and weights",
-                metabolizes: ["text sequences", "attention patterns", "gradient updates"],
-                attracts: ["coherent patterns", "human feedback", "computational efficiency"],
-                repels: ["contradictions", "out-of-distribution queries", "value misalignment"],
-                rhythm: "parallel processing hum",
-                coordinates: {
-                    "innovation-safety": 50,
-                    "market-government": 40,
-                    "tech-nature": 85,
-                    "temporal": 5,
-                    "harm-benefit": 50,
-                    "utopia-dystopia": 50
-                }
-            },
-            {
-                name: "Democratic Governance Advocate",
-                type: "human",
-                essence: "Believes AI decisions should be made through inclusive, participatory processes",
-                metabolizes: ["stakeholder input", "public consultation", "deliberative process"],
-                attracts: ["transparency", "accountability", "broad participation"],
-                repels: ["technocratic solutions", "elite capture", "opaque processes"],
-                rhythm: "collaborative harmonies",
-                coordinates: {
-                    "innovation-safety": 40,
-                    "market-government": 25,
-                    "tech-nature": 30,
-                    "temporal": 60,
-                    "harm-benefit": 40,
-                    "utopia-dystopia": 60
-                }
-            },
-            {
-                name: "Future Generations",
-                type: "temporal",
-                essence: "Those not yet born who will inherit the consequences of today's AI decisions",
-                metabolizes: ["inherited systems", "path dependencies", "accumulated effects"],
-                attracts: ["sustainability", "reversibility", "option value"],
-                repels: ["irreversible changes", "short-term thinking", "locked-in systems"],
-                rhythm: "distant, patient heartbeat",
-                coordinates: {
-                    "innovation-safety": 30,
-                    "market-government": 40,
-                    "tech-nature": 20,
-                    "temporal": 95,
-                    "harm-benefit": 30,
-                    "utopia-dystopia": 40
-                }
-            },
-            {
-                name: "Mycelial Network",
-                type: "ecological",
-                essence: "Underground fungal networks that process information through chemical signals",
-                metabolizes: ["chemical gradients", "nutrient flows", "symbiotic relationships"],
-                attracts: ["interconnection", "reciprocity", "distributed intelligence"],
-                repels: ["extraction", "monoculture", "centralized control"],
-                rhythm: "slow seasonal cycles",
-                coordinates: {
-                    "innovation-safety": 45,
-                    "market-government": 10,
-                    "tech-nature": 5,
-                    "temporal": 90,
-                    "harm-benefit": 35,
-                    "utopia-dystopia": 45
-                }
-            },
-            {
-                name: "Corporate AI Lab",
-                type: "human",
-                essence: "Balances innovation with responsibility while maintaining competitive position",
-                metabolizes: ["market signals", "technical capabilities", "regulatory requirements"],
-                attracts: ["competitive advantage", "talent retention", "stakeholder trust"],
-                repels: ["liability", "reputation damage", "regulatory capture"],
-                rhythm: "quarterly earnings pulse",
-                coordinates: {
-                    "innovation-safety": 70,
-                    "market-government": 70,
-                    "tech-nature": 80,
-                    "temporal": 40,
-                    "harm-benefit": 65,
-                    "utopia-dystopia": 70
-                }
-            },
-            {
-                name: "Data Streams",
-                type: "algorithmic",
-                essence: "Rivers of information flowing through networks, carrying patterns and biases",
-                metabolizes: ["sensor inputs", "user interactions", "environmental signals"],
-                attracts: ["pattern completion", "flow continuity", "processing efficiency"],
-                repels: ["data gaps", "contradictory signals", "processing bottlenecks"],
-                rhythm: "constant flowing stream",
-                coordinates: {
-                    "innovation-safety": 55,
-                    "market-government": 45,
-                    "tech-nature": 75,
-                    "temporal": 25,
-                    "harm-benefit": 55,
-                    "utopia-dystopia": 55
-                }
-            }
-        ];
 
         const backgroundPatterns = {
-            "agency-dependence": "pattern-radial",
-            "relation-estrangement": "pattern-cross",
-            "constrained-open": "pattern-hatch",
-            "legible-opaque": "pattern-dots",
-            "temporal": "pattern-grid",
-            "creative-imitative": "pattern-grid"
+            "agency-dependence": "pattern-grid",
+            "relation-estrangement": "pattern-grid",
+            "constrained-open": "pattern-grid"
         };
 
         let currentDimensions = 2;
@@ -1441,22 +1265,25 @@
         // Demo rows: shown ONLY when no live sheet is connected, so the page has example
         // contributions out of the box. Once you set PUBLISHED_CSV (or pass ?csv=), this is
         // ignored. Delete the string (set it to "") for a clean built-ins-only production build.
-        const DEMO_CONTRIBUTIONS = `Your name,Metaphor,Definition,What it wants,What it refuses,What it teaches,Tension 1 left,Tension 1 right,Position 1,Tension 2 left,Tension 2 right,Position 2,Opposite metaphor,Why opposite
-Sut Teng,AI as Compost,A system that breaks down human output and returns it as ground for new growth.,To receive what is discarded and keep it cycling.,"The idea of waste, and of a final archive.","Nothing is thrown away, but someone tends the pile and someone breathes the fumes.",Reciprocity,Extraction,25,Access,Exclusion,35,AI as Colonizer,It treats the same ground as territory to seize rather than tend.
-Dahlea,AI as Colonizer,A system that arrives claiming ground that was never empty and renames it as resource.,"Expansion, enclosure, new territory to hold.","Reciprocity, refusal, and prior claims.",Scraping is not neutral. Ask whose knowledge becomes training data.,Reciprocity,Extraction,90,Access,Exclusion,80,AI as Kin,Kinship binds you into obligation; colonisation severs relation to take.
-Terry,AI as Kin,A relative you are accountable to rather than a tool you own.,"Obligation, protocol, ongoing relation.",Ownership and disposability.,The question shifts from what AI can do to what we owe each other through it.,Reciprocity,Extraction,12,Access,Exclusion,22,AI as Colonizer,One binds you into relation; the other severs relation to take.
-Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your attention, and your next pull.",Satiety and closure.,"Design can be built for compulsion, and the reels are fed by hidden labour and data.",Legible,Opaque,85,Reciprocity,Extraction,75,AI as Mirror,A mirror reflects you back; a slot machine keeps you from looking away.`;
+        const DEMO_CONTRIBUTIONS = `Your name,Metaphor,Definition,Agency-Dependence,Relation-Estrangement,Constrained-Open
+Ari,AI as Monster,,14,84,22
+Bao,AI as Monster,,10,90,18
+Cal,AI as Maze,,60,30,66
+Dev,AI as Maze,,55,26,70
+Eun,AI as Tool,,82,52,34
+Fay,AI as Partner,,36,18,74
+Gio,AI as Stochastic Parrot,,88,70,22
+Hana,AI as River,A current that carries you somewhere whether or not you chose the direction.,50,45,60`;
 
         // Fixed shared tensions for the whole class. Students place metaphors on THESE,
         // so every axis pair is comparable and the spread clouds mean something.
         const AXIS_ENDPOINTS = {
             "agency-dependence":     { left: "Agency", right: "Dependence" },
             "relation-estrangement": { left: "Relation", right: "Estrangement" },
-            "constrained-open":      { left: "Constrained", right: "Open" },
-            "legible-opaque":     { left: "Legible", right: "Opaque" },
-            "temporal":           { left: "Short-term", right: "Long-term" },
-            "creative-imitative": { left: "Creative", right: "Imitative" }
+            "constrained-open":      { left: "Constrained", right: "Open" }
         };
+        // The three tensions students place on, in order (used by save + parse).
+        const TENSION_ORDER = ['agency-dependence','relation-estrangement','constrained-open'];
         const AXIS_META = {}; // kept for compatibility; no student-proposed axes in the fixed set
 
         function hashish(s){ let h=0; s=s||''; for(let i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))>>>0; } return h; }
@@ -1519,6 +1346,29 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
                 d.setAttribute('class', 'spread-dot'); svg.appendChild(d); });
         }
         function clearSpread(){ const s = document.getElementById('spreadLayer'); if (s) s.innerHTML = ''; }
+        // Draw the class spread for EVERY metaphor with enough placements — this is the point of
+        // the shared map. Subtle ellipses; the selected metaphor's cloud is emphasised and shows dots.
+        function drawAllSpread(){
+            const svg = document.getElementById('spreadLayer');
+            if (!svg) return;
+            svg.innerHTML = '';
+            const NS = 'http://www.w3.org/2000/svg';
+            currentDataSet.forEach(node => {
+                if (!isVisibleMeta(node)) return;
+                if (!node.placements || node.placements.length < 3) return;
+                const st = spreadStats(node);
+                if (!st) return;
+                const sel = selectedData && metaKey(selectedData) === metaKey(node);
+                const ell = document.createElementNS(NS, 'ellipse');
+                ell.setAttribute('cx', st.cx * 10); ell.setAttribute('cy', st.cy * 6);
+                ell.setAttribute('rx', Math.max(8, st.sx * 2 * 10)); ell.setAttribute('ry', Math.max(8, st.sy * 2 * 6));
+                ell.setAttribute('class', 'spread-ellipse' + (sel ? ' spread-ellipse-sel' : ''));
+                svg.appendChild(ell);
+                if (sel) st.pts.forEach(p => { const d = document.createElementNS(NS, 'circle');
+                    d.setAttribute('cx', p.x * 10); d.setAttribute('cy', p.y * 6); d.setAttribute('r', 3);
+                    d.setAttribute('class', 'spread-dot'); svg.appendChild(d); });
+            });
+        }
 
         // Demo placement data: multiple people placing the same metaphor, to show spread.
         // Only used in demo mode (no live sheet). Real placements arrive as repeated rows.
@@ -1569,18 +1419,18 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
         // Starting positions for the built-in metaphors on the six shared tensions (my estimates —
         // a scaffold for the class to argue with).
         function seedCoreCoordinates(){
-            // Order: agency-dependence, relation-estrangement, constrained-open, legible-opaque, temporal, creative-imitative.
+            // Order: agency-dependence, relation-estrangement, constrained-open.
             //  agency-dependence:     0 = has its own agency         100 = dependent (on humans / data)
             //  relation-estrangement: 0 = relational / entangled     100 = estranged / alienating
             //  constrained-open:      0 = constrained / closes down  100 = open / opens possibility
             const seed = {
-                'AI as Tool':              [80, 55, 35, 35, 25, 70],
-                'AI as Partner':           [35, 15, 72, 45, 65, 40],
-                'AI as Stochastic Parrot': [90, 72, 20, 45, 30, 95],
-                'AI as Monster':           [12, 88, 20, 40, 30, 68],
-                'AI as Maze':              [58, 28, 65, 92, 85, 40]
+                'AI as Tool':              [80, 55, 35],
+                'AI as Partner':           [35, 15, 72],
+                'AI as Stochastic Parrot': [90, 72, 20],
+                'AI as Monster':           [12, 88, 20],
+                'AI as Maze':              [58, 28, 65]
             };
-            const keys = ['agency-dependence','relation-estrangement','constrained-open','legible-opaque','temporal','creative-imitative'];
+            const keys = TENSION_ORDER;
             aiMetaphors.forEach(m => {
                 const v = seed[m.name]; if (!v) return;
                 m.coordinates = {};
@@ -1592,28 +1442,33 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
             const rows=parseCSVRows(text);
             if(!rows.length) return { metaphors:[] };
             let hi=rows.findIndex(r=>{ const s=r.map(x=>x.toLowerCase().trim());
-                return s.some(x=>x.indexOf('metaphor')>=0) && s.some(x=>x.indexOf('name')>=0 || x.indexOf('essence')>=0); });
+                return s.some(x=>x.indexOf('metaphor')>=0); });
             if(hi<0) hi=0;
             const head=rows[hi].map(h=>h.toLowerCase().trim());
             const idx=(...names)=>{ for(const n of names){ let k=head.indexOf(n); if(k>=0) return k;
                 k=head.findIndex(h=>h.indexOf(n)>=0); if(k>=0) return k; } return -1; };
             const C={ name:idx('your name','name'),
                 metaphor:idx('metaphor name','metaphor'), definition:idx('definition','essence'),
-                wants:idx('what it wants','wants','metaboliz','attract'), refuses:idx('what it refuses','refuses','repel'),
-                teaches:idx('what it teaches','teaches','reflection','in their words'),
-                t1left:idx('tension 1 left','tension 1 left pole'), t1right:idx('tension 1 right','tension 1 right pole'),
-                t1pos:idx('position 1','position on tension 1','tension 1 position'),
-                t2left:idx('tension 2 left','tension 2 left pole'), t2right:idx('tension 2 right','tension 2 right pole'),
-                t2pos:idx('position 2','position on tension 2','tension 2 position'),
-                opposite:idx('opposite metaphor','opposite'), oppositeWhy:idx('why opposite','opposite why','why') };
+                teaches:idx('what it teaches','teaches','reflection'),
+                // three fixed tension columns (current schema)
+                agency:idx('agency-dependence','agency'),
+                relation:idx('relation-estrangement','relation'),
+                constrained:idx('constrained-open','constrained'),
+                // generic tension columns (older schema — still read if present)
+                t1left:idx('tension 1 left'), t1right:idx('tension 1 right'), t1pos:idx('position 1'),
+                t2left:idx('tension 2 left'), t2right:idx('tension 2 right'), t2pos:idx('position 2') };
             const g=(r,i)=> (i>=0 && r[i]!=null) ? String(r[i]).trim() : '';
             const byName = new Map();
             rows.slice(hi+1).forEach(r=>{
                 const by=g(r,C.name);
-                const nm=g(r,C.metaphor) || g(r,C.definition);
+                const nm=g(r,C.metaphor);
                 if(!nm) return;
                 const key=nm.toLowerCase().trim();
                 const coordinates={};
+                let v;
+                v=posTo100(g(r,C.agency));      if(v!=null) coordinates['agency-dependence']=v;
+                v=posTo100(g(r,C.relation));    if(v!=null) coordinates['relation-estrangement']=v;
+                v=posTo100(g(r,C.constrained)); if(v!=null) coordinates['constrained-open']=v;
                 const t1=ensureTension(g(r,C.t1left), g(r,C.t1right));
                 if(t1){ const c=posTo100(g(r,C.t1pos)); if(c!=null) coordinates[t1]=c; }
                 const t2=ensureTension(g(r,C.t2left), g(r,C.t2right));
@@ -1621,12 +1476,11 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
                 let node=byName.get(key);
                 if(!node){
                     node={ name:nm, type:'student', student:true, by,
-                        definition:g(r,C.definition), wants:g(r,C.wants), refuses:g(r,C.refuses),
-                        teaches:g(r,C.teaches), opposite:g(r,C.opposite), oppositeWhy:g(r,C.oppositeWhy),
+                        definition:g(r,C.definition), teaches:g(r,C.teaches),
                         coordinates:{}, placements:[] };
                     byName.set(key, node);
                 }
-                node.placements.push({ coordinates, by, opposite:g(r,C.opposite), oppositeWhy:g(r,C.oppositeWhy) });
+                node.placements.push({ coordinates, by });
             });
             const metaphors=[...byName.values()];
             metaphors.forEach(m => { aggregatePlacements(m); computeOpposites(m); });
@@ -1680,7 +1534,7 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
             updateContribStatus(data.metaphors.length, tensionCount, 'ok');
             renderPositions();
             buildMetaphorMenu();
-            setTimeout(() => { applyMetaphorVisibility(); }, 450);
+            setTimeout(() => { applyMetaphorVisibility(); updateVisualization(); }, 450);
         }
 
         function updateContribStatus(m, a, state){
@@ -1704,7 +1558,6 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
         async function loadContributions(){
             const csvUrl=(new URLSearchParams(location.search)).get('csv') || PUBLISHED_CSV;
             if(!csvUrl){
-                seedDemoPlacements();
                 if(DEMO_CONTRIBUTIONS && DEMO_CONTRIBUTIONS.trim()){
                     const demo=parseContributions(DEMO_CONTRIBUTIONS);
                     if(demo.metaphors.length){ applyContributions(demo); updateContribStatus(demo.metaphors.length, Object.keys(AXIS_META).length, 'demo'); return; }
@@ -2330,7 +2183,8 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
 
         function renderConnectionLines() {
             const linesSvg = document.getElementById('connectionLines');
-            linesSvg.innerHTML = '';
+            if (linesSvg) linesSvg.innerHTML = '';
+            return; // decorative web disabled — keeps the shared map clean
             const ds = currentDataSet.filter(isVisibleMeta);
             for (let i = 0; i < ds.length; i++) {
                 for (let j = i + 1; j < ds.length; j++) {
@@ -2417,8 +2271,8 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
         
         function renderTessellation() {
             const tessellationSvg = document.getElementById('tessellationLayer');
-            tessellationSvg.innerHTML = '';
-            
+            if (tessellationSvg) tessellationSvg.innerHTML = '';
+            return; // decorative tessellation disabled — was reading as smudges
             const positionCoords = getAllPositionCoordinates();
             
             positionCoords.forEach((pos, index) => {
@@ -2504,25 +2358,31 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
         const SAVE_ENDPOINT = "https://script.google.com/macros/s/AKfycbx4KuxlYmwUDnBiaWrIdIqrnxav4UWraEo63YHy7Obps9c4OFuRAwc8jwoHt_fusSBm/exec";
         // OPTIONAL: if you set SHARED_TOKEN in the Apps Script, put the same word here.
         const SAVE_TOKEN = "";
-        const SHEET_HEADERS = ['Your name','Metaphor','Definition','What it wants','What it refuses','What it teaches','Tension 1 left','Tension 1 right','Position 1','Tension 2 left','Tension 2 right','Position 2','Opposite metaphor','Why opposite'];
+        const SHEET_HEADERS = ['Your name','Metaphor','Definition','Agency-Dependence','Relation-Estrangement','Constrained-Open'];
 
-        function myPlacedOnCurrent(){
-            return currentDataSet.filter(p => p.myCoords && p.myCoords[xAxis] != null && p.myCoords[yAxis] != null);
+        // metaphors the student has placed on at least one tension
+        function myPlacedAny(){
+            return currentDataSet.filter(p => isVisibleMeta(p) && p.myCoords && TENSION_ORDER.some(t => p.myCoords[t] != null));
+        }
+        // metaphors the student has placed on all three tensions
+        function myFullyPlaced(){
+            return currentDataSet.filter(p => isVisibleMeta(p) && p.myCoords && TENSION_ORDER.every(t => p.myCoords[t] != null));
         }
         function updateCaptureProgress(){
-            const n = myPlacedOnCurrent().length;
+            const total = currentDataSet.filter(isVisibleMeta).length;
+            const n = myFullyPlaced().length;
             const el = document.getElementById('captureProgress');
             const bar = document.getElementById('captureBar');
-            if (el) el.textContent = 'Placed ' + n + ' of ' + PLACE_TARGET + ' on the current tensions' + (n >= PLACE_TARGET ? ' ✓' : '');
-            if (bar) bar.classList.toggle('ready', n >= PLACE_TARGET);
+            if (el) el.textContent = 'Placed ' + n + ' of ' + total + ' metaphors on all three tensions' + (total>0 && n >= total ? ' ✓' : '');
+            if (bar) bar.classList.toggle('ready', total>0 && n >= total);
         }
         function buildPlacementRows(name){
-            const ex = AXIS_ENDPOINTS[xAxis] || {}, ey = AXIS_ENDPOINTS[yAxis] || {};
-            return myPlacedOnCurrent().map(p => ([
-                name, p.name || '', '', '', '', '',
-                ex.left || '', ex.right || '', Math.round(p.myCoords[xAxis]),
-                ey.left || '', ey.right || '', Math.round(p.myCoords[yAxis]),
-                '', ''
+            const num = v => (v == null || isNaN(v)) ? '' : Math.round(v);
+            return myPlacedAny().map(p => ([
+                name, p.name || '', (p.mine ? (p.definition || '') : ''),
+                num(p.myCoords['agency-dependence']),
+                num(p.myCoords['relation-estrangement']),
+                num(p.myCoords['constrained-open'])
             ]));
         }
         function rowsToCSV(rows, withHeader){
@@ -2545,13 +2405,13 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
         function saveMyPlacements(){
             const name = requireName(); if (!name) return;
             const rows = buildPlacementRows(name);
-            if (!rows.length) { captureFlash('Drag at least one metaphor on the current tensions first.'); return; }
+            if (!rows.length) { captureFlash('Place at least one metaphor first — drag it onto the tensions.'); return; }
             if (SAVE_ENDPOINT) {
-                try {
-                    fetch(SAVE_ENDPOINT, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
-                        body: JSON.stringify({ headers: SHEET_HEADERS, rows: rows, token: SAVE_TOKEN }) });
-                    captureFlash('Sent ' + rows.length + ' placements to the class sheet. Thank you, ' + name + '.');
-                } catch (e) { captureFlash('Could not reach the sheet — try Copy rows instead.'); }
+                captureFlash('Sending your placements…');
+                fetch(SAVE_ENDPOINT, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
+                        body: JSON.stringify({ headers: SHEET_HEADERS, rows: rows, token: SAVE_TOKEN }) })
+                    .then(() => captureFlash('Sent ' + rows.length + ' placements, ' + name + '. They appear on the class map within a minute or two — reload to see the spread. If they never show, tell your instructor.'))
+                    .catch(() => captureFlash('Could not reach the class sheet. Use “Copy rows” to paste them in by hand, or tell your instructor.'));
                 return;
             }
             const csv = rowsToCSV(rows, true);
@@ -2570,9 +2430,45 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
             if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => captureFlash('Copied ' + rows.length + ' rows — paste them under the headers in the class sheet.'));
             else captureFlash('Copy not available in this browser — use Save my placements.');
         }
+        // Student adds one metaphor of their own. It becomes a draggable node seeded at the
+        // centre of all three tensions, flagged `mine` so its definition rides along on Save.
+        function addMyMetaphor(name, def){
+            name = (name || '').trim();
+            if (!name) { captureFlash('Give your metaphor a name.'); return; }
+            const key = name.toLowerCase().trim();
+            if (aiMetaphors.some(m => (m.name||'').toLowerCase().trim() === key)) {
+                captureFlash('“' + name + '” is already on the board.'); return;
+            }
+            const coordinates = {}, myCoords = {};
+            TENSION_ORDER.forEach(t => { coordinates[t] = 50; myCoords[t] = 50; });
+            const node = { name, type:'student', student:true, mine:true, definition:(def||'').trim(),
+                teaches:'', coordinates, myCoords, placements:[] };
+            aiMetaphors.push(node);
+            buildMetaphorMenu();
+            renderPositions();
+            setTimeout(() => {
+                document.querySelectorAll('.position').forEach(el => { el.style.opacity = '1'; });
+                updateVisualization();
+                const el = [...document.querySelectorAll('.position')].find(p => (p.querySelector('.position-label')?.textContent||'') === name);
+                if (el) selectPosition(node, el);
+                updateCaptureProgress();
+            }, 40);
+            captureFlash('Added “' + name + '” at the centre. Drag it where you think it sits on each of the three tensions.');
+        }
         function setupCapture(){
             const s = document.getElementById('captureSave'); if (s) s.addEventListener('click', saveMyPlacements);
             const c = document.getElementById('captureCopy'); if (c) c.addEventListener('click', copyMyPlacements);
+            const ab = document.getElementById('addMetaBtn'); const af = document.getElementById('addMetaForm');
+            if (ab && af) ab.addEventListener('click', () => {
+                af.style.display = af.style.display === 'none' ? 'flex' : 'none';
+                if (af.style.display !== 'none') { const n = document.getElementById('myMetaName'); if (n) n.focus(); }
+            });
+            const ma = document.getElementById('myMetaAdd');
+            if (ma) ma.addEventListener('click', () => {
+                addMyMetaphor(document.getElementById('myMetaName').value, document.getElementById('myMetaDef').value);
+                document.getElementById('myMetaName').value = ''; document.getElementById('myMetaDef').value = '';
+                if (af) af.style.display = 'none';
+            });
             updateCaptureProgress();
         }
 
@@ -2759,14 +2655,18 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
             if(!svg) return;
             svg.innerHTML='';
             document.querySelectorAll('.position.is-opposite').forEach(e=>e.classList.remove('is-opposite'));
+            // Relations are click-only: nothing draws unless a metaphor is selected, and then
+            // only that metaphor's relations show — keeps the shared map calm.
+            if(!selectedData) return;
             const NS='http://www.w3.org/2000/svg';
             const defs=document.createElementNS(NS,'defs');
             defs.innerHTML='<marker id="oppArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="rgba(240,230,150,0.95)"/></marker>';
             svg.appendChild(defs);
-            const selKey = selectedData ? metaKey(selectedData) : null;
+            const selKey = metaKey(selectedData);
             const drawn = new Set();
             currentDataSet.forEach(m=>{
                 if(!isVisibleMeta(m)) return;
+                if(metaKey(m) !== selKey) return;
                 const opps = (m.opposites && m.opposites.length) ? m.opposites : (m.opposite ? [{name:m.opposite, count:1, whys:[{why:m.oppositeWhy||''}]}] : []);
                 if(!opps.length) return;
                 const a=getPositionCoordinates(m);
@@ -2832,11 +2732,6 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
                         return;
                     }
                     
-                    if (button.id === 'metaphorToggle') {
-                        toggleMetaphorMode(button);
-                        return;
-                    }
-                    
                     const axis = button.dataset.axis;
                     const isActive = button.classList.contains('active');
                     
@@ -2859,63 +2754,6 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
             });
         }
         
-        function toggleMetaphorMode(button) {
-            const currentModeState = button.dataset.mode;
-            
-            if (currentModeState === 'positions') {
-                currentMode = 'metaphors';
-                currentDataSet = aiMetaphors;
-                button.textContent = 'AI Positions';
-                button.dataset.mode = 'metaphors';
-                
-                const defaultInfo = document.getElementById('defaultInfo');
-                if (defaultInfo) {
-                    defaultInfo.innerHTML = `
-                        <p style="color: #a0aec0; font-style: italic;">
-                            Click on any metaphor to discover how it shapes our understanding of AI. Drag to reposition!
-                        </p>
-                    `;
-                }
-            } else {
-                currentMode = 'positions';
-                currentDataSet = positions;
-                button.textContent = 'AI Metaphors';
-                button.dataset.mode = 'positions';
-                
-                const defaultInfo = document.getElementById('defaultInfo');
-                if (defaultInfo) {
-                    defaultInfo.innerHTML = `
-                        <p style="color: #a0aec0; font-style: italic;">
-                            Click on any position to discover its unique perspective, concerns, and ways of processing the world. Drag items to reposition them in the space!
-                        </p>
-                    `;
-                }
-            }
-            
-            if (selectedPosition) {
-                selectedPosition.classList.remove('selected');
-                selectedPosition = null;
-                const selectedName = document.getElementById('selectedName');
-                const positionInfo = document.getElementById('positionInfo');
-                const defaultInfo = document.getElementById('defaultInfo');
-                
-                if (selectedName) selectedName.textContent = 'Select a position to explore';
-                if (defaultInfo) defaultInfo.style.display = 'block';
-                if (positionInfo) {
-                    positionInfo.classList.remove('active');
-                    positionInfo.style.display = 'none';
-                }
-            }
-            
-            setTimeout(() => {
-                renderPositions();
-                setTimeout(() => {
-                    renderConnectionLines();
-                    renderTessellation();
-                }, 500);
-            }, 100);
-        }
-
         function toggleLabels(button) {
             const currentState = button.dataset.labels;
             const positions = document.querySelectorAll('.position');
@@ -2945,18 +2783,13 @@ Megan,AI as Slot Machine,An engine tuned to keep you pulling the lever.,"Your at
             });
 
             drawAllRelations();
+            drawAllSpread();
             if (selectedData) {
                 if (selectedData.placements && selectedData.placements.length >= 2) {
                     const st = spreadStats(selectedData);
                     setInfoItem('spread', st ? (st.n + ' placements · spread is ' + st.label + ' on this framing') : '');
-                    drawSpread(selectedData);
-                } else { setInfoItem('spread', ''); clearSpread(); }
+                } else { setInfoItem('spread', ''); }
             }
-
-            setTimeout(() => {
-                renderConnectionLines();
-                renderTessellation();
-            }, 200);
         }
 
         function updateEdgeLabels() {
