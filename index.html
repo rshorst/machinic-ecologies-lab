@@ -846,6 +846,26 @@
         /* --- tension picker --- */
         .axis-picker { display: inline-flex; align-items: center; gap: 8px; }
         .axis-picker-label { font-size: 0.7rem; letter-spacing: 0.6px; text-transform: uppercase; color: #8fb3c9; }
+        /* two sheet tabs replace the X/Y picker */
+        .sheet-tabs { display: inline-flex; gap: 6px; align-items: center; }
+        .sheet-tab {
+            padding: 8px 16px; border-radius: 12px; cursor: pointer; font-family: inherit;
+            font-size: 0.85rem; color: #cbd5e1; background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.18); transition: all 0.25s ease;
+        }
+        .sheet-tab:hover { border-color: rgba(255,255,255,0.4); }
+        .sheet-tab.active {
+            color: #fff; font-weight: 600;
+            background: rgba(var(--sheet-accent, 59,130,246), 0.28);
+            border-color: rgba(var(--sheet-accent, 59,130,246), 0.75);
+        }
+        .sheet-tab-poles { font-size: 0.72em; opacity: 0.7; margin-left: 6px; }
+        /* subtle per-sheet tint on the board */
+        .visualization-area::after {
+            content: ''; position: absolute; inset: 0; pointer-events: none;
+            background: radial-gradient(ellipse at 50% 50%, rgba(var(--sheet-accent, 59,130,246), 0.12), transparent 70%);
+            transition: background 0.5s ease; z-index: 0;
+        }
         .axis-select {
             background: linear-gradient(135deg, rgba(59,130,246,0.18) 0%, rgba(168,85,247,0.18) 100%);
             border: 1px solid rgba(59,130,246,0.5); border-radius: 24px; padding: 11px 18px;
@@ -999,6 +1019,7 @@
         .mm-text { display: flex; flex-direction: column; line-height: 1.25; }
         .mm-opp { font-size: 0.66rem; color: #8fb3c9; }
         .mm-star { color: #d9c6f5; }
+        .mm-by { color: #8fb3c9; font-size: 0.85em; }
 
         /* --- declared opposition edge --- */
         /* --- placement spread cloud --- */
@@ -1025,7 +1046,7 @@
     <div class="container">
         <header>
             <h1>Machinic Ecology</h1>
-            <p class="subtitle">A shared map for thinking with the metaphors we use for AI. Drag each metaphor to where you think it sits on the three tensions — Agency ↔ Dependence, Relation ↔ Estrangement, Constrained ↔ Open — then add one metaphor of your own and save. The clouds show where the whole class landed: tight where we agree, wide where we don't.</p>
+            <p class="subtitle">A shared map for thinking with the metaphors we use for AI. Two sheets: the <strong>Relational</strong> sheet (Agency ↔ Dependence · Relation ↔ Estrangement) and the <strong>World-making</strong> sheet (Reciprocity ↔ Extraction · Constrained ↔ Open). Drag each metaphor to where you think it sits on both, add one of your own, declare a relationship or two, and save. The clouds show where the whole class landed — tight where we agree, wide where we don't.</p>
             <div class="explore-bar">
                 <span class="explore-label">Where to start</span>
                 <select class="axis-select" id="exploreSel"></select>
@@ -1035,12 +1056,7 @@
         
         <div class="garden-space">
             <div class="dimensional-controls">
-                <div class="axis-picker">
-                    <span class="axis-picker-label">Tension</span>
-                    <select class="axis-select" id="tensionSel"></select>
-                    <button class="axis-mini" id="assignX" title="Place this tension on the horizontal axis">Set →X</button>
-                    <button class="axis-mini" id="assignY" title="Place this tension on the vertical axis">Set ↑Y</button>
-                </div>
+                <div class="sheet-tabs" id="sheetTabs"></div>
 
                 <div style="margin-left: 20px; padding-left: 20px; border-left: 1px solid rgba(255, 255, 255, 0.3); display: inline-flex; gap: 12px; align-items: center;">
                     <button class="axis-selector" id="labelToggle" data-labels="visible">Hide Labels</button>
@@ -1119,9 +1135,10 @@
         </div>
 
         <div class="capture-bar" id="captureBar">
-            <span class="capture-progress" id="captureProgress">Placed 0 of 5 metaphors on all three tensions</span>
+            <span class="capture-progress" id="captureProgress">Placed 0 of 5 metaphors on both sheets</span>
             <input class="capture-name" id="captureName" type="text" placeholder="Your name" />
             <button class="axis-mini" id="addMetaBtn">+ Add your metaphor</button>
+            <button class="axis-selector" id="linkToggle" data-on="false">+ Add relationship</button>
             <button class="axis-mini" id="captureSave">Save my placements</button>
             <button class="axis-mini" id="captureCopy">Copy rows</button>
             <span class="capture-msg" id="captureMsg"></span>
@@ -1129,6 +1146,13 @@
                 <input id="myMetaName" type="text" placeholder="your metaphor (e.g. AI as River)" style="width:240px;" />
                 <input id="myMetaDef" type="text" placeholder="one-line definition" style="width:320px;" />
                 <button class="axis-mini" id="myMetaAdd">Add</button>
+            </div>
+            <div class="link-bar" id="linkBar" style="display: none; width:100%;">
+                <span class="link-prompt" id="linkPrompt"></span>
+                <input class="capture-name" id="linkName" type="text" placeholder="name the relation (e.g. counters, extends, echoes)" style="display:none; width:280px;" />
+                <button class="axis-mini" id="linkSave" style="display:none;">Add relation</button>
+                <button class="axis-mini" id="linkCancel">Done</button>
+                <span class="capture-msg" id="linkMsg"></span>
             </div>
         </div>
 
@@ -1169,6 +1193,10 @@
                     <div class="info-label">Class placements</div>
                     <div class="info-value" id="spread"></div>
                 </div>
+                <div class="info-item" id="placedByItem">
+                    <div class="info-label">Placed by</div>
+                    <div class="info-value" id="placedBy"></div>
+                </div>
                 <div class="info-item" id="oppositeItem">
                     <div class="info-label">Relations</div>
                     <div class="info-value" id="opposite"></div>
@@ -1190,7 +1218,7 @@
                 wants: "A clear task and a steady hand.",
                 refuses: "Acting on its own, and blame for outcomes.",
                 teaches: "Calling AI 'just a tool' can hide the decisions built into it. Ask whose purposes it serves.",
-                coordinates: { "agency-dependence": 80, "relation-estrangement": 55, "constrained-open": 35 }
+                coordinates: { "agency-dependence": 80, "relation-estrangement": 55, "reciprocity-extraction": 60, "constrained-open": 35 }
             },
             {
                 name: "AI as Partner",
@@ -1199,7 +1227,7 @@
                 wants: "Cooperation on level terms.",
                 refuses: "Domination in either direction.",
                 teaches: "Partnership can flatter an unequal relation. Ask who sets the goals and who carries the risk.",
-                coordinates: { "agency-dependence": 35, "relation-estrangement": 15, "constrained-open": 72 }
+                coordinates: { "agency-dependence": 35, "relation-estrangement": 15, "reciprocity-extraction": 30, "constrained-open": 72 }
             },
             {
                 name: "AI as Stochastic Parrot",
@@ -1209,7 +1237,7 @@
                 refuses: "Understanding, grounding, and accountability for what it says.",
                 teaches: "Fluency is not comprehension. Ask whose words were scraped to feed it, and who is harmed when the pattern is confidently wrong.",
                 source: "Term from Bender, Gebru, McMillan-Major & Shmitchell (2021), 'On the Dangers of Stochastic Parrots.'",
-                coordinates: { "agency-dependence": 90, "relation-estrangement": 72, "constrained-open": 20 }
+                coordinates: { "agency-dependence": 90, "relation-estrangement": 72, "reciprocity-extraction": 85, "constrained-open": 20 }
             },
             {
                 name: "AI as Monster",
@@ -1219,7 +1247,7 @@
                 refuses: "Restraint, oversight, and human responsibility for what was built.",
                 teaches: "Dishon reads this 'Frankensteinian' imaginary as casting AI as 'an external actor' we struggle to control (p. 968) — a threat because of its all-too-human nature. Fear of the creature can crowd out the slower work of governance.",
                 source: "Dishon (2024), From Monsters to Mazes, Postdigital Science and Education 6:962–977 — Frankenstein imaginary (pp. 966–968).",
-                coordinates: { "agency-dependence": 12, "relation-estrangement": 88, "constrained-open": 20 }
+                coordinates: { "agency-dependence": 12, "relation-estrangement": 88, "reciprocity-extraction": 80, "constrained-open": 20 }
             },
             {
                 name: "AI as Maze",
@@ -1229,15 +1257,16 @@
                 refuses: "A clear exit, a verdict, and a view from above.",
                 teaches: "Dishon's 'Kafkaesque' imaginary shifts control from domination to a system that 'expands the available choices while limiting humans’ influence over patterns of meaning-making' (p. 962). More options need not mean more control.",
                 source: "Dishon (2024), From Monsters to Mazes, Postdigital Science and Education 6:962–977 — Kafka / The Trial imaginary (pp. 968–974).",
-                coordinates: { "agency-dependence": 58, "relation-estrangement": 28, "constrained-open": 65 }
+                coordinates: { "agency-dependence": 58, "relation-estrangement": 28, "reciprocity-extraction": 65, "constrained-open": 65 }
             }
         ];
 
 
         const backgroundPatterns = {
-            "agency-dependence": "pattern-grid",
-            "relation-estrangement": "pattern-grid",
-            "constrained-open": "pattern-grid"
+            "agency-dependence": "pattern-radial",
+            "relation-estrangement": "pattern-cross",
+            "reciprocity-extraction": "pattern-dots",
+            "constrained-open": "pattern-hatch"
         };
 
         let currentDimensions = 2;
@@ -1265,25 +1294,33 @@
         // Demo rows: shown ONLY when no live sheet is connected, so the page has example
         // contributions out of the box. Once you set PUBLISHED_CSV (or pass ?csv=), this is
         // ignored. Delete the string (set it to "") for a clean built-ins-only production build.
-        const DEMO_CONTRIBUTIONS = `Your name,Metaphor,Definition,Agency-Dependence,Relation-Estrangement,Constrained-Open
-Ari,AI as Monster,,14,84,22
-Bao,AI as Monster,,10,90,18
-Cal,AI as Maze,,60,30,66
-Dev,AI as Maze,,55,26,70
-Eun,AI as Tool,,82,52,34
-Fay,AI as Partner,,36,18,74
-Gio,AI as Stochastic Parrot,,88,70,22
-Hana,AI as River,A current that carries you somewhere whether or not you chose the direction.,50,45,60`;
+        const DEMO_CONTRIBUTIONS = `Your name,Metaphor,Definition,Agency-Dependence,Relation-Estrangement,Reciprocity-Extraction,Constrained-Open,Related to,Relationship
+Ari,AI as Monster,,14,84,82,22,,
+Bao,AI as Monster,,10,90,78,18,,
+Cal,AI as Maze,,60,30,66,66,,
+Dev,AI as Maze,,55,26,60,70,,
+Eun,AI as Tool,,82,52,58,34,,
+Fay,AI as Partner,,36,18,28,74,,
+Gio,AI as Stochastic Parrot,,88,70,86,22,,
+Hana,AI as River,A current that carries you somewhere whether or not you chose the direction.,50,45,55,60,,
+Ari,AI as Monster,,,,,,AI as Maze,turns on its makers`;
 
         // Fixed shared tensions for the whole class. Students place metaphors on THESE,
         // so every axis pair is comparable and the spread clouds mean something.
         const AXIS_ENDPOINTS = {
-            "agency-dependence":     { left: "Agency", right: "Dependence" },
-            "relation-estrangement": { left: "Relation", right: "Estrangement" },
-            "constrained-open":      { left: "Constrained", right: "Open" }
+            "agency-dependence":       { left: "Agency", right: "Dependence" },
+            "relation-estrangement":   { left: "Relation", right: "Estrangement" },
+            "reciprocity-extraction":  { left: "Reciprocity", right: "Extraction" },
+            "constrained-open":        { left: "Constrained", right: "Open" }
         };
-        // The three tensions students place on, in order (used by save + parse).
-        const TENSION_ORDER = ['agency-dependence','relation-estrangement','constrained-open'];
+        // The four tensions students place on, in order (used by save + parse).
+        const TENSION_ORDER = ['agency-dependence','relation-estrangement','reciprocity-extraction','constrained-open'];
+        // Two fixed sheets, each a 2-D board with its own accent colour. Tabs switch between them.
+        const SHEETS = [
+            { id:'relational',   label:'Relational',   x:'agency-dependence',      y:'relation-estrangement', accent:'59,130,246' },
+            { id:'world-making', label:'World-making',  x:'reciprocity-extraction', y:'constrained-open',      accent:'45,180,120' }
+        ];
+        let currentSheet = 0;
         const AXIS_META = {}; // kept for compatibility; no student-proposed axes in the fixed set
 
         function hashish(s){ let h=0; s=s||''; for(let i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))>>>0; } return h; }
@@ -1419,16 +1456,17 @@ Hana,AI as River,A current that carries you somewhere whether or not you chose t
         // Starting positions for the built-in metaphors on the six shared tensions (my estimates —
         // a scaffold for the class to argue with).
         function seedCoreCoordinates(){
-            // Order: agency-dependence, relation-estrangement, constrained-open.
-            //  agency-dependence:     0 = has its own agency         100 = dependent (on humans / data)
-            //  relation-estrangement: 0 = relational / entangled     100 = estranged / alienating
-            //  constrained-open:      0 = constrained / closes down  100 = open / opens possibility
+            // Order: agency-dependence, relation-estrangement, reciprocity-extraction, constrained-open.
+            //  agency-dependence:      0 = has its own agency         100 = dependent (on humans / data)
+            //  relation-estrangement:  0 = relational / entangled     100 = estranged / alienating
+            //  reciprocity-extraction: 0 = gives back / reciprocal    100 = extracts (data, labour, attention)
+            //  constrained-open:       0 = constrained / closes down  100 = open / opens possibility
             const seed = {
-                'AI as Tool':              [80, 55, 35],
-                'AI as Partner':           [35, 15, 72],
-                'AI as Stochastic Parrot': [90, 72, 20],
-                'AI as Monster':           [12, 88, 20],
-                'AI as Maze':              [58, 28, 65]
+                'AI as Tool':              [80, 55, 60, 35],
+                'AI as Partner':           [35, 15, 30, 72],
+                'AI as Stochastic Parrot': [90, 72, 85, 20],
+                'AI as Monster':           [12, 88, 80, 20],
+                'AI as Maze':              [58, 28, 65, 65]
             };
             const keys = TENSION_ORDER;
             aiMetaphors.forEach(m => {
@@ -1453,7 +1491,11 @@ Hana,AI as River,A current that carries you somewhere whether or not you chose t
                 // three fixed tension columns (current schema)
                 agency:idx('agency-dependence','agency'),
                 relation:idx('relation-estrangement','relation'),
+                reciprocity:idx('reciprocity-extraction','reciprocity','extraction'),
                 constrained:idx('constrained-open','constrained'),
+                // relationships between metaphors
+                relatedTo:idx('related to','opposite metaphor','related'),
+                relationship:idx('relationship','why opposite'),
                 // generic tension columns (older schema — still read if present)
                 t1left:idx('tension 1 left'), t1right:idx('tension 1 right'), t1pos:idx('position 1'),
                 t2left:idx('tension 2 left'), t2right:idx('tension 2 right'), t2pos:idx('position 2') };
@@ -1468,11 +1510,13 @@ Hana,AI as River,A current that carries you somewhere whether or not you chose t
                 let v;
                 v=posTo100(g(r,C.agency));      if(v!=null) coordinates['agency-dependence']=v;
                 v=posTo100(g(r,C.relation));    if(v!=null) coordinates['relation-estrangement']=v;
+                v=posTo100(g(r,C.reciprocity)); if(v!=null) coordinates['reciprocity-extraction']=v;
                 v=posTo100(g(r,C.constrained)); if(v!=null) coordinates['constrained-open']=v;
                 const t1=ensureTension(g(r,C.t1left), g(r,C.t1right));
                 if(t1){ const c=posTo100(g(r,C.t1pos)); if(c!=null) coordinates[t1]=c; }
                 const t2=ensureTension(g(r,C.t2left), g(r,C.t2right));
                 if(t2){ const c=posTo100(g(r,C.t2pos)); if(c!=null) coordinates[t2]=c; }
+                const relatedTo=g(r,C.relatedTo), relationship=g(r,C.relationship);
                 let node=byName.get(key);
                 if(!node){
                     node={ name:nm, type:'student', student:true, by,
@@ -1480,41 +1524,50 @@ Hana,AI as River,A current that carries you somewhere whether or not you chose t
                         coordinates:{}, placements:[] };
                     byName.set(key, node);
                 }
-                node.placements.push({ coordinates, by });
+                node.placements.push({ coordinates, by, opposite:relatedTo, oppositeWhy:relationship });
             });
             const metaphors=[...byName.values()];
             metaphors.forEach(m => { aggregatePlacements(m); computeOpposites(m); });
             return { metaphors };
         }
 
-        // ---- one tension menu; students assign the picked tension to X or Y ----
-        function allTensions(){
-            return Object.keys(AXIS_ENDPOINTS)
-                .filter(id => sandboxMode || !SANDBOX_TENSIONS.has(id))
-                .map(id=>({ id, left:AXIS_ENDPOINTS[id].left, right:AXIS_ENDPOINTS[id].right, student:SANDBOX_TENSIONS.has(id) }));
-        }
-        function tensionDisplay(t){ return (t.student?'✳ ':'') + t.left + ' ↔ ' + t.right; }
-        function populateTensionSelects(){
-            const sel=document.getElementById('tensionSel');
-            if(!sel) return;
-            const cur=sel.value;
-            sel.innerHTML=allTensions().map(t=>'<option value="'+t.id+'">'+esc(tensionDisplay(t))+'</option>').join('');
-            if(cur && AXIS_ENDPOINTS[cur]) sel.value=cur;
-            updateAxisReadout();
-        }
+        // ---- two fixed sheets, switched by tabs ----
+        function populateTensionSelects(){ /* no-op: tensions are fixed per sheet now */ }
         function updateAxisReadout(){
             const el=document.getElementById('axisReadout');
             if(!el) return;
             const ex=AXIS_ENDPOINTS[xAxis]||{left:'?',right:'?'}, ey=AXIS_ENDPOINTS[yAxis]||{left:'?',right:'?'};
             el.innerHTML='<span class="ro-x">X → ' + esc(ex.left + ' ↔ ' + ex.right) + '</span><span class="ro-y">Y ↑ ' + esc(ey.left + ' ↔ ' + ey.right) + '</span>';
         }
-        function setupTensionSelects(){
-            populateTensionSelects();
-            const sel=document.getElementById('tensionSel');
-            const ax=document.getElementById('assignX'), ay=document.getElementById('assignY');
-            if(ax) ax.addEventListener('click', ()=>{ if(sel && sel.value){ xAxis=sel.value; updateVisualization(); if(AXIS_META[xAxis]) showAxisInfo(xAxis); } });
-            if(ay) ay.addEventListener('click', ()=>{ if(sel && sel.value){ yAxis=sel.value; updateVisualization(); if(AXIS_META[yAxis]) showAxisInfo(yAxis); } });
+        function applySheetAccent(){
+            const s = SHEETS[currentSheet];
+            const garden = document.getElementById('garden');
+            if (garden) garden.style.setProperty('--sheet-accent', s.accent);
+            const tabs = document.getElementById('sheetTabs');
+            if (tabs) tabs.style.setProperty('--sheet-accent', s.accent);
         }
+        function switchSheet(i){
+            if (i < 0 || i >= SHEETS.length) return;
+            currentSheet = i;
+            const s = SHEETS[i];
+            xAxis = s.x; yAxis = s.y;
+            document.querySelectorAll('#sheetTabs .sheet-tab').forEach((el, idx) => el.classList.toggle('active', idx === i));
+            applySheetAccent();
+            updateVisualization();
+        }
+        function buildSheetTabs(){
+            const wrap = document.getElementById('sheetTabs');
+            if (!wrap) return;
+            wrap.innerHTML = SHEETS.map((s, i) => {
+                const ex = AXIS_ENDPOINTS[s.x], ey = AXIS_ENDPOINTS[s.y];
+                const poles = ex.left + '↔' + ex.right + ' · ' + ey.left + '↔' + ey.right;
+                return '<button class="sheet-tab' + (i === currentSheet ? ' active' : '') + '" data-sheet="' + i + '">' +
+                    esc(s.label) + '<span class="sheet-tab-poles">' + esc(poles) + '</span></button>';
+            }).join('');
+            wrap.querySelectorAll('.sheet-tab').forEach(btn => btn.addEventListener('click', () => switchSheet(+btn.dataset.sheet)));
+            applySheetAccent();
+        }
+        function setupTensionSelects(){ buildSheetTabs(); }
 
         function applyContributions(data){
             data.metaphors.forEach(m => {
@@ -1867,7 +1920,10 @@ Hana,AI as River,A current that carries you somewhere whether or not you chose t
         }
         function relationRow(fromName, toName, name){
             const r = new Array(SHEET_HEADERS.length).fill('');
-            r[0] = captureName() || ''; r[1] = fromName; r[12] = toName; r[13] = name;
+            r[SHEET_HEADERS.indexOf('Your name')] = captureName() || '';
+            r[SHEET_HEADERS.indexOf('Metaphor')] = fromName;
+            r[SHEET_HEADERS.indexOf('Related to')] = toName;
+            r[SHEET_HEADERS.indexOf('Relationship')] = name;
             return r;
         }
         function postRows(rows){
@@ -2184,7 +2240,6 @@ Hana,AI as River,A current that carries you somewhere whether or not you chose t
         function renderConnectionLines() {
             const linesSvg = document.getElementById('connectionLines');
             if (linesSvg) linesSvg.innerHTML = '';
-            return; // decorative web disabled — keeps the shared map clean
             const ds = currentDataSet.filter(isVisibleMeta);
             for (let i = 0; i < ds.length; i++) {
                 for (let j = i + 1; j < ds.length; j++) {
@@ -2272,7 +2327,6 @@ Hana,AI as River,A current that carries you somewhere whether or not you chose t
         function renderTessellation() {
             const tessellationSvg = document.getElementById('tessellationLayer');
             if (tessellationSvg) tessellationSvg.innerHTML = '';
-            return; // decorative tessellation disabled — was reading as smudges
             const positionCoords = getAllPositionCoordinates();
             
             positionCoords.forEach((pos, index) => {
@@ -2340,8 +2394,9 @@ Hana,AI as River,A current that carries you somewhere whether or not you chose t
             list.innerHTML = currentDataSet.map(p => {
                 const k = metaKey(p);
                 const checked = hiddenMetaphors.has(k) ? '' : 'checked';
+                const who = (p.student && p.by) ? ' <span class="mm-by">— ' + esc(p.by) + '</span>' : '';
                 return '<label class="mm-row"><input type="checkbox" data-meta="' + esc(k) + '" ' + checked + '>' +
-                    '<span class="mm-text"><span class="mm-name">' + esc(p.name || '') + (p.student ? ' <span class="mm-star">✳</span>' : '') + '</span></span></label>';
+                    '<span class="mm-text"><span class="mm-name">' + esc(p.name || '') + (p.student ? ' <span class="mm-star">✳</span>' : '') + who + '</span></span></label>';
             }).join('');
             list.querySelectorAll('input[type=checkbox]').forEach(cb => {
                 cb.addEventListener('change', e => {
@@ -2358,7 +2413,7 @@ Hana,AI as River,A current that carries you somewhere whether or not you chose t
         const SAVE_ENDPOINT = "https://script.google.com/macros/s/AKfycbwhfb-B34X_0nNfFIMk6cDIA5KGaoYyuDPNZxhPHoQrJRASi-BK9E5OYUkkQyTgOmbJ/exec";
         // OPTIONAL: if you set SHARED_TOKEN in the Apps Script, put the same word here.
         const SAVE_TOKEN = "";
-        const SHEET_HEADERS = ['Your name','Metaphor','Definition','Agency-Dependence','Relation-Estrangement','Constrained-Open'];
+        const SHEET_HEADERS = ['Your name','Metaphor','Definition','Agency-Dependence','Relation-Estrangement','Reciprocity-Extraction','Constrained-Open','Related to','Relationship'];
 
         // metaphors the student has placed on at least one tension
         function myPlacedAny(){
@@ -2373,7 +2428,7 @@ Hana,AI as River,A current that carries you somewhere whether or not you chose t
             const n = myFullyPlaced().length;
             const el = document.getElementById('captureProgress');
             const bar = document.getElementById('captureBar');
-            if (el) el.textContent = 'Placed ' + n + ' of ' + total + ' metaphors on all three tensions' + (total>0 && n >= total ? ' ✓' : '');
+            if (el) el.textContent = 'Placed ' + n + ' of ' + total + ' metaphors on both sheets' + (total>0 && n >= total ? ' ✓' : '');
             if (bar) bar.classList.toggle('ready', total>0 && n >= total);
         }
         function buildPlacementRows(name){
@@ -2382,7 +2437,9 @@ Hana,AI as River,A current that carries you somewhere whether or not you chose t
                 name, p.name || '', (p.mine ? (p.definition || '') : ''),
                 num(p.myCoords['agency-dependence']),
                 num(p.myCoords['relation-estrangement']),
-                num(p.myCoords['constrained-open'])
+                num(p.myCoords['reciprocity-extraction']),
+                num(p.myCoords['constrained-open']),
+                '', ''
             ]));
         }
         function rowsToCSV(rows, withHeader){
@@ -2442,7 +2499,7 @@ Hana,AI as River,A current that carries you somewhere whether or not you chose t
             const coordinates = {}, myCoords = {};
             TENSION_ORDER.forEach(t => { coordinates[t] = 50; myCoords[t] = 50; });
             const node = { name, type:'student', student:true, mine:true, definition:(def||'').trim(),
-                teaches:'', coordinates, myCoords, placements:[] };
+                by: captureName() || '', teaches:'', coordinates, myCoords, placements:[] };
             aiMetaphors.push(node);
             buildMetaphorMenu();
             renderPositions();
@@ -2611,8 +2668,22 @@ Hana,AI as River,A current that carries you somewhere whether or not you chose t
                 renderFootprint(position);
                 const st = (position.placements && position.placements.length >= 2) ? spreadStats(position) : null;
                 setInfoItem('spread', st ? (st.n + ' placements · spread is ' + st.label + ' on this framing') : '');
-                drawSpread(position);
+                // who placed it, and where — one entry per placement
+                const pls = (position.placements || []).filter(pl => pl.by);
+                if (pls.length) {
+                    const parts = pls.map(pl => {
+                        const c = pl.coordinates || {};
+                        const bits = TENSION_ORDER.filter(t => c[t] != null).map(t => {
+                            const e = AXIS_ENDPOINTS[t]; return e.left[0] + '/' + e.right[0] + ' ' + Math.round(c[t]);
+                        });
+                        return pl.by + (bits.length ? ' — ' + bits.join(', ') : '');
+                    });
+                    setInfoItem('placedBy', parts.join('   ·   '));
+                } else {
+                    setInfoItem('placedBy', position.by || '');
+                }
                 selectedData = position;
+                drawAllSpread();
                 drawOpposition(position);
             } catch (error) {
                 console.warn('Error selecting position:', error);
@@ -2624,14 +2695,27 @@ Hana,AI as River,A current that carries you somewhere whether or not you chose t
             const item = document.getElementById('footprintItem');
             if (!fp) return;
             const coords = position.coordinates || {};
-            const rows = Object.keys(AXIS_ENDPOINTS)
-                .filter(id => coords[id] != null)
+            const pls = position.placements || [];
+            const rows = TENSION_ORDER
+                .filter(id => AXIS_ENDPOINTS[id])
                 .map(id => {
                     const e = AXIS_ENDPOINTS[id];
-                    const v = Math.round(coords[id]);
+                    // one dot per person who placed it on this tension — hover shows who + where
+                    let dots = pls
+                        .filter(pl => pl.coordinates && pl.coordinates[id] != null)
+                        .map(pl => {
+                            const v = Math.round(pl.coordinates[id]);
+                            const who = pl.by || 'someone';
+                            return '<div class="fp-dot" style="left:' + v + '%" title="' + esc(who + ' · ' + v) + '"></div>';
+                        }).join('');
+                    if (!dots && coords[id] != null) {
+                        const v = Math.round(coords[id]);
+                        dots = '<div class="fp-dot" style="left:' + v + '%" title="' + esc('class average · ' + v) + '"></div>';
+                    }
+                    if (!dots) return '';
                     return '<div class="fp-row"><div class="fp-poles"><span>' + esc(e.left) + '</span><span>' + esc(e.right) + '</span></div>' +
-                        '<div class="fp-track"><div class="fp-dot" style="left:' + v + '%"></div></div></div>';
-                }).join('');
+                        '<div class="fp-track">' + dots + '</div></div>';
+                }).filter(Boolean).join('');
             fp.innerHTML = rows || '<span class="fp-empty">Not placed on any tension yet — drag it onto one.</span>';
             if (item) item.style.display = 'block';
         }
@@ -2655,18 +2739,16 @@ Hana,AI as River,A current that carries you somewhere whether or not you chose t
             if(!svg) return;
             svg.innerHTML='';
             document.querySelectorAll('.position.is-opposite').forEach(e=>e.classList.remove('is-opposite'));
-            // Relations are click-only: nothing draws unless a metaphor is selected, and then
-            // only that metaphor's relations show — keeps the shared map calm.
-            if(!selectedData) return;
+            // All declared relationships are drawn, quietly. When a metaphor is selected, the
+            // relations touching it are brightened and their labels shown — everything else stays faint.
             const NS='http://www.w3.org/2000/svg';
             const defs=document.createElementNS(NS,'defs');
             defs.innerHTML='<marker id="oppArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="rgba(240,230,150,0.95)"/></marker>';
             svg.appendChild(defs);
-            const selKey = metaKey(selectedData);
+            const selKey = selectedData ? metaKey(selectedData) : null;
             const drawn = new Set();
             currentDataSet.forEach(m=>{
                 if(!isVisibleMeta(m)) return;
-                if(metaKey(m) !== selKey) return;
                 const opps = (m.opposites && m.opposites.length) ? m.opposites : (m.opposite ? [{name:m.opposite, count:1, whys:[{why:m.oppositeWhy||''}]}] : []);
                 if(!opps.length) return;
                 const a=getPositionCoordinates(m);
@@ -2675,27 +2757,29 @@ Hana,AI as River,A current that carries you somewhere whether or not you chose t
                     const target=o.name.toLowerCase().trim();
                     const tnode=currentDataSet.find(p => p!==m && metaKey(p)===target);
                     if(!tnode || !isVisibleMeta(tnode)) return;
+                    // dedup undirected pair so A↔B isn't drawn twice
+                    const pairKey = [metaKey(m), target].sort().join('~');
+                    if(drawn.has(pairKey)) return; drawn.add(pairKey);
+                    const isSel = selKey && (metaKey(m) === selKey || target === selKey);
                     const relName = (o.whys && o.whys[0] && o.whys[0].why) ? o.whys[0].why : '';
-                    const key = metaKey(m)+'>'+target+'|'+relName;
-                    if(drawn.has(key)) return; drawn.add(key);
                     const b=getPositionCoordinates(tnode);
                     const strength=o.count/maxCount;
                     const halo=document.createElementNS(NS,'line');
                     halo.setAttribute('x1', a.x*10); halo.setAttribute('y1', a.y*6);
                     halo.setAttribute('x2', b.x*10); halo.setAttribute('y2', b.y*6);
                     halo.setAttribute('class','opposition-halo');
-                    halo.style.strokeOpacity = 0.10 + 0.12*strength;
+                    halo.style.strokeOpacity = isSel ? (0.10 + 0.12*strength) : 0.05;
                     svg.appendChild(halo);
                     const line=document.createElementNS(NS,'line');
                     line.setAttribute('x1', a.x*10); line.setAttribute('y1', a.y*6);
                     line.setAttribute('x2', b.x*10); line.setAttribute('y2', b.y*6);
                     line.setAttribute('class','opposition-line');
-                    line.style.strokeWidth = (1 + 1.3*strength).toFixed(2);
-                    line.style.strokeOpacity = 0.45 + 0.5*strength;
+                    line.style.strokeWidth = (isSel ? (1 + 1.3*strength) : 0.9).toFixed(2);
+                    line.style.strokeOpacity = isSel ? (0.5 + 0.45*strength) : 0.22;
                     line.setAttribute('marker-end','url(#oppArrow)');
                     line.setAttribute('marker-start','url(#oppArrow)');
                     svg.appendChild(line);
-                    if (relName) {
+                    if (relName && isSel) {
                         const mx = (a.x + b.x) / 2 * 10, my = (a.y + b.y) / 2 * 6;
                         const label = relName.length > 24 ? relName.slice(0,24) + '…' : relName;
                         let ang = Math.atan2((b.y*6 - a.y*6), (b.x*10 - a.x*10)) * 180 / Math.PI;
@@ -2714,10 +2798,11 @@ Hana,AI as River,A current that carries you somewhere whether or not you chose t
                         g.appendChild(t);
                         svg.appendChild(g);
                     }
-                    if (selKey && metaKey(m) === selKey) {
+                    if (isSel) {
+                        const otherKey = (metaKey(m) === selKey) ? target : metaKey(m);
                         document.querySelectorAll('.position').forEach(el=>{
                             const lbl=el.querySelector('.position-label');
-                            if(lbl && lbl.textContent.toLowerCase().trim()===target) el.classList.add('is-opposite');
+                            if(lbl && lbl.textContent.toLowerCase().trim()===otherKey) el.classList.add('is-opposite');
                         });
                     }
                 });
@@ -2790,6 +2875,11 @@ Hana,AI as River,A current that carries you somewhere whether or not you chose t
                     setInfoItem('spread', st ? (st.n + ' placements · spread is ' + st.label + ' on this framing') : '');
                 } else { setInfoItem('spread', ''); }
             }
+
+            setTimeout(() => {
+                renderConnectionLines();
+                renderTessellation();
+            }, 200);
         }
 
         function updateEdgeLabels() {
