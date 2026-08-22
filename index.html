@@ -917,11 +917,22 @@
         @keyframes nsPulse { 0% { transform: scale(0.9); opacity: 0.6; } 75% { transform: scale(1.7); opacity: 0; } 100% { transform: scale(1.7); opacity: 0; } }
 
         /* --- footprint (where a metaphor has been placed) --- */
-        .fp-row { margin: 8px 0; }
+        .fp-row { margin: 10px 0; }
         .fp-poles { display: flex; justify-content: space-between; font-size: 0.68rem; color: #8fb3c9; margin-bottom: 3px; }
-        .fp-track { position: relative; height: 6px; background: rgba(255,255,255,0.08); border-radius: 4px; }
-        .fp-dot { position: absolute; top: 50%; width: 11px; height: 11px; border-radius: 50%;
-            background: #93c5fd; transform: translate(-50%, -50%); box-shadow: 0 0 8px rgba(147,197,253,0.6); }
+        .fp-track { position: relative; height: 18px; background: rgba(255,255,255,0.08); border-radius: 9px; }
+        .fp-dot { position: absolute; top: 50%; width: 12px; height: 12px; border-radius: 50%;
+            background: #93c5fd; transform: translate(-50%, -50%); box-shadow: 0 0 8px rgba(147,197,253,0.6);
+            cursor: default; transition: transform 0.1s ease; }
+        .fp-dot:hover { transform: translate(-50%, -50%) scale(1.35); z-index: 6; box-shadow: 0 0 12px rgba(147,197,253,0.95); }
+        /* hollow marker = the seeded starting position / class average, not a person's placement */
+        .fp-dot-agg { background: transparent; border: 2px solid rgba(147,197,253,0.85); box-shadow: none; }
+        /* instant hover tooltip showing who placed it */
+        .fp-dot::after {
+            content: attr(data-tip); position: absolute; bottom: 150%; left: 50%; transform: translateX(-50%);
+            white-space: nowrap; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem;
+            background: rgba(10,20,30,0.95); color: #e8f0f7; border: 1px solid rgba(147,197,253,0.5);
+            opacity: 0; pointer-events: none; transition: opacity 0.12s ease; z-index: 7; }
+        .fp-dot:hover::after { opacity: 1; }
         .fp-empty { color: #8fb3c9; font-style: italic; }
 
         /* --- text size control --- */
@@ -1230,17 +1241,7 @@
                 coordinates: { "agency-dependence": 35, "relation-estrangement": 15, "reciprocity-extraction": 30, "constrained-open": 72 }
             },
             {
-                name: "AI as Stochastic Parrot",
-                type: "statistical",
-                definition: "A system that stitches together language it has seen, by statistical pattern, without grasping meaning.",
-                wants: "Plausible, fluent-sounding output.",
-                refuses: "Understanding, grounding, and accountability for what it says.",
-                teaches: "Fluency is not comprehension. Ask whose words were scraped to feed it, and who is harmed when the pattern is confidently wrong.",
-                source: "Term from Bender, Gebru, McMillan-Major & Shmitchell (2021), 'On the Dangers of Stochastic Parrots.'",
-                coordinates: { "agency-dependence": 90, "relation-estrangement": 72, "reciprocity-extraction": 85, "constrained-open": 20 }
-            },
-            {
-                name: "AI as Monster",
+                name: "AI as Frankenstein",
                 type: "frankensteinian",
                 definition: "An anthropomorphic creation imagined as a discrete, human-like agent that may break free and turn on its makers.",
                 wants: "To be recognised, and — once abandoned — to dominate.",
@@ -1295,15 +1296,15 @@
         // contributions out of the box. Once you set PUBLISHED_CSV (or pass ?csv=), this is
         // ignored. Delete the string (set it to "") for a clean built-ins-only production build.
         const DEMO_CONTRIBUTIONS = `Your name,Metaphor,Definition,Agency-Dependence,Relation-Estrangement,Reciprocity-Extraction,Constrained-Open,Related to,Relationship
-Ari,AI as Monster,,14,84,82,22,,
-Bao,AI as Monster,,10,90,78,18,,
+Ari,AI as Frankenstein,,14,84,82,22,,
+Bao,AI as Frankenstein,,10,90,78,18,,
 Cal,AI as Maze,,60,30,66,66,,
 Dev,AI as Maze,,55,26,60,70,,
 Eun,AI as Tool,,82,52,58,34,,
 Fay,AI as Partner,,36,18,28,74,,
-Gio,AI as Stochastic Parrot,,88,70,86,22,,
+Gio,AI as Tool,,78,58,62,30,,
 Hana,AI as River,A current that carries you somewhere whether or not you chose the direction.,50,45,55,60,,
-Ari,AI as Monster,,,,,,AI as Maze,turns on its makers`;
+Ari,AI as Frankenstein,,,,,,AI as Maze,turns on its makers`;
 
         // Fixed shared tensions for the whole class. Students place metaphors on THESE,
         // so every axis pair is comparable and the spread clouds mean something.
@@ -1462,11 +1463,10 @@ Ari,AI as Monster,,,,,,AI as Maze,turns on its makers`;
             //  reciprocity-extraction: 0 = gives back / reciprocal    100 = extracts (data, labour, attention)
             //  constrained-open:       0 = constrained / closes down  100 = open / opens possibility
             const seed = {
-                'AI as Tool':              [80, 55, 60, 35],
-                'AI as Partner':           [35, 15, 30, 72],
-                'AI as Stochastic Parrot': [90, 72, 85, 20],
-                'AI as Monster':           [12, 88, 80, 20],
-                'AI as Maze':              [58, 28, 65, 65]
+                'AI as Tool':        [80, 55, 60, 35],
+                'AI as Partner':     [35, 15, 30, 72],
+                'AI as Frankenstein':[12, 88, 80, 20],
+                'AI as Maze':        [58, 28, 65, 65]
             };
             const keys = TENSION_ORDER;
             aiMetaphors.forEach(m => {
@@ -2700,17 +2700,19 @@ Ari,AI as Monster,,,,,,AI as Maze,turns on its makers`;
                 .filter(id => AXIS_ENDPOINTS[id])
                 .map(id => {
                     const e = AXIS_ENDPOINTS[id];
-                    // one dot per person who placed it on this tension — hover shows who + where
-                    let dots = pls
-                        .filter(pl => pl.coordinates && pl.coordinates[id] != null)
-                        .map(pl => {
-                            const v = Math.round(pl.coordinates[id]);
-                            const who = pl.by || 'someone';
-                            return '<div class="fp-dot" style="left:' + v + '%" title="' + esc(who + ' · ' + v) + '"></div>';
-                        }).join('');
+                    // one dot per person who placed it on this tension — hover shows who + where.
+                    // fan overlapping dots vertically so each stays hoverable.
+                    const placed = pls.filter(pl => pl.coordinates && pl.coordinates[id] != null);
+                    let dots = placed.map((pl, i) => {
+                        const v = Math.round(pl.coordinates[id]);
+                        const who = pl.by || 'someone';
+                        const jitter = placed.length > 1 ? ((i % 3) - 1) * 5 : 0; // -5,0,+5 px
+                        return '<div class="fp-dot" style="left:' + v + '%; top:calc(50% + ' + jitter + 'px)" data-tip="' + esc(who + ' · ' + v) + '"></div>';
+                    }).join('');
                     if (!dots && coords[id] != null) {
                         const v = Math.round(coords[id]);
-                        dots = '<div class="fp-dot" style="left:' + v + '%" title="' + esc('class average · ' + v) + '"></div>';
+                        const lbl = (pls.length ? 'class average' : 'starting position — no class placements yet') + ' · ' + v;
+                        dots = '<div class="fp-dot fp-dot-agg" style="left:' + v + '%" data-tip="' + esc(lbl) + '"></div>';
                     }
                     if (!dots) return '';
                     return '<div class="fp-row"><div class="fp-poles"><span>' + esc(e.left) + '</span><span>' + esc(e.right) + '</span></div>' +
